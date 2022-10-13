@@ -7,7 +7,7 @@
 #define FALSE 0
 
 #define MAX_VERTICES 100
-#define INF 1000
+#define INF 999
 
 int* parent;
 
@@ -22,6 +22,7 @@ typedef struct GraphType {
     struct Edge* edges;      // 간선 정보
 }GraphType;
 
+
 void set_init(int n);
 int set_find(int curr);
 void set_union(int a, int b);
@@ -31,19 +32,26 @@ int compare(const void* a, const void* b);
 void kruskal(GraphType* g);
 
 
-
 int main(void)
 {
     GraphType* g;
     g = (GraphType*)malloc(sizeof(GraphType));
 
 
-    int num_node, i, j;
+    int num_node, i, j, max_e;
     printf("n을 입력: ");
     scanf_s("%d", &num_node);
 
     g->n = num_node;
     g->n_e = 0; //?
+
+    max_e = num_node * num_node / 2;
+    g->edges = (struct Edge*)malloc(sizeof(struct Edge) * max_e);
+    for (i = 0; i < max_e; i++) {
+        g->edges[i].start = g->edges[i].end = 0;
+        g->edges[i].weight = INF;
+    }
+
 
     //2차원 행렬 생성 n x n 크기의 행렬 (n은 노드의 개수)
     g->adj_mat = (int**)malloc(sizeof(int*) * num_node);      // 인접행렬 표현
@@ -53,32 +61,49 @@ int main(void)
             g->adj_mat[i][j] = 0; //인접행렬 초기화
     }
 
-
-    for (i = 0; i < num_node; i++)
+    //사용자로부터 인접행렬 정보 입력받기
+    for (i = 0; i < num_node; i++) {
         for (j = 0; j < num_node; j++)
             scanf_s("%d", &(g->adj_mat[i][j]));
+    }
 
     // 인접행렬에서 LL을 이용한 간선 리스트 만들기 for Kruskal alg.
-    for (i = 0; i < num_node; i++)            
-        for (j = 0; j < num_node; j++)
+    for (i = 0; i < num_node; i++) {
+        for (j = 0; j < i; j++)
             if (g->adj_mat[i][j] > 0 && g->adj_mat[i][j] != INF) {   // only valid edges
-                g->edges[g->n_e].start = i + 1;   // 노드 번호는 1부터 시작
-                g->edges[g->n_e].end = j + 1;
+                g->edges[g->n_e].start = i;   // 노드 번호는 1부터 시작
+                g->edges[g->n_e].end = j;
                 g->edges[g->n_e++].weight = g->adj_mat[i][j];
             }
+    }
+
+    printf("\n그래프 인접행렬 표현: \n");
+    for (i = 0; i < num_node; i++) {
+        for (j = 0; j < num_node; j++)
+            printf("%3d ", g->adj_mat[i][j]);
+        printf("\n");
+    }
+    printf("\n");
+
+    //printf("\n그래프 간선배열 :\n");
+    //for (i = 0; i < g->n_e; i++) {
+       // printf("%d.start = %d\n",i, g->edges[i].start);
+       // printf("%d.end = %d\n", i,g->edges[i].end);
+        //printf("%d.weight = %d\n",i, g->edges[i].weight);
+   // }
 
 
-    graph_init(g);
+    //graph_init(g);
 
-    insert_edge(g, 0, 1, 29);
-    insert_edge(g, 1, 2, 16);
-    insert_edge(g, 2, 3, 12);
-    insert_edge(g, 3, 4, 22);
-    insert_edge(g, 4, 5, 27);
-    insert_edge(g, 5, 0, 10);
-    insert_edge(g, 6, 1, 15);
-    insert_edge(g, 6, 3, 18);
-    insert_edge(g, 6, 4, 25);
+    //insert_edge(g, 0, 1, 29);
+    //insert_edge(g, 1, 2, 16);
+    //insert_edge(g, 2, 3, 12);
+    //insert_edge(g, 3, 4, 22);
+    //insert_edge(g, 4, 5, 27);
+    //insert_edge(g, 5, 0, 10);
+    //insert_edge(g, 6, 1, 15);
+    //insert_edge(g, 6, 3, 18);
+    //insert_edge(g, 6, 4, 25);
 
     kruskal(g);
     free(g);
@@ -151,7 +176,7 @@ void kruskal(GraphType* g)
 
     printf("크루스칼 최소 신장 트리 알고리즘 \n");
     int i = 0;
-    while (edge_accepted < g->n)	// 신장트리 간선의 수 = (n-1)
+    while (edge_accepted < g->n_e-1)	// 신장트리 간선의 수 = (n-1)
     {
         e = g->edges[i];
         uset = set_find(e.start);	// 정점 u의 집합 번호 
