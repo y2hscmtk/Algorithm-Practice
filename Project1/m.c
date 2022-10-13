@@ -85,27 +85,10 @@ int main(void)
     }
     printf("\n");
 
-    //printf("\n그래프 간선배열 :\n");
-    //for (i = 0; i < g->n_e; i++) {
-       // printf("%d.start = %d\n",i, g->edges[i].start);
-       // printf("%d.end = %d\n", i,g->edges[i].end);
-        //printf("%d.weight = %d\n",i, g->edges[i].weight);
-   // }
-
-
-    //graph_init(g);
-
-    //insert_edge(g, 0, 1, 29);
-    //insert_edge(g, 1, 2, 16);
-    //insert_edge(g, 2, 3, 12);
-    //insert_edge(g, 3, 4, 22);
-    //insert_edge(g, 4, 5, 27);
-    //insert_edge(g, 5, 0, 10);
-    //insert_edge(g, 6, 1, 15);
-    //insert_edge(g, 6, 3, 18);
-    //insert_edge(g, 6, 4, 25);
-
-    kruskal(g);
+    int st_kind;
+    printf("옵션 선택 최소 0 최대 1 :");
+    scanf_s("%d", &st_kind);
+    kruskal(g,st_kind);
     free(g);
     return 0;
 }
@@ -155,24 +138,40 @@ void insert_edge(GraphType* g, int start, int end, int w)
     g->edges[g->n].weight = w;
     g->n++;
 }
-// qsort()에 사용되는 함수
-int compare(const void* a, const void* b)
+
+//오름차순 정렬용 => 최소 비용
+int compare1(const void* a, const void* b)
 {
     struct Edge* x = (struct Edge*)a;
     struct Edge* y = (struct Edge*)b;
     return (x->weight - y->weight);
 }
 
+//내림차순 정렬용 => 최대 비용
+int compare2(const void* a, const void* b)
+{
+    struct Edge* x = (struct Edge*)a;
+    struct Edge* y = (struct Edge*)b;
+    return (y->weight - x->weight);
+}
+
 
 // kruskal의 최소 비용 신장 트리 프로그램
-void kruskal(GraphType* g)
+void kruskal(GraphType* g,int st_kind)
 {
     int edge_accepted = 0;	// 현재까지 선택된 간선의 수	
     int uset, vset;		// 정점 u와 정점 v의 집합 번호
     struct Edge e;
 
     set_init(g->n);		// 집합 초기화
-    qsort(g->edges, g->n, sizeof(struct Edge), compare);
+    switch (st_kind) {
+    case 0://0은 최소비용
+        qsort(g->edges, g->n, sizeof(struct Edge), compare1);
+        break;
+    case 1:
+        qsort(g->edges, g->n, sizeof(struct Edge), compare2);
+    }
+    
 
     printf("크루스칼 최소 신장 트리 알고리즘 \n");
     int i = 0;
