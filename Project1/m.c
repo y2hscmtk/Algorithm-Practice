@@ -293,7 +293,8 @@ struct Edge get_max_edge(int n) {
             break;
         }
     for (i = 0; i < n; i++)
-        if (!selected[i] && distance[i].weight != INF && (distance[i].weight >= distance[v].weight)) v = i;
+        if (!selected[i] && distance[i].weight != INF && (distance[i].weight > distance[v].weight)) 
+            v = i;
     return distance[v];
 }
 
@@ -307,13 +308,33 @@ void prim(GraphType* g, int prim_st,int st_kind)
     distance = (int*)malloc(sizeof(int) * g->n);
     selected = (int*)malloc(sizeof(int) * g->n);
 
-    //distance의 모든값 INF로 초기화
-    for (u = 0; u < g->n; u++) {
-        distance[u].weight = INF;
-        selected[u] = NULL;
+    switch (st_kind) {
+    case 0:
+        //distance의 모든값 INF로 초기화
+        for (u = 0; u < g->n; u++) {
+            distance[u].weight = INF;
+            selected[u] = NULL;
+        }
+        break;
+    case 1:
+        //최대비용 신장트리의 경우
+        //distance의 모든값 -INF로 초기화
+        for (u = 0; u < g->n; u++) {
+            distance[u].weight = -INF;
+            selected[u] = NULL;
+        }
+        break;
     }
-
-    distance[prim_st].weight = 0;
+    
+    switch (st_kind) {
+    case 0:
+        distance[prim_st].weight = 0; //최소비용 신장트리의 경우
+        break;
+    case 1:
+        distance[prim_st].weight = 1000; //최대비용 신장트리의 경우 => INF보다 큰 값으로 설정
+        break;
+    }
+    //distance[prim_st].weight = 0;
     distance[prim_st].start = prim_st;
     distance[prim_st].end = prim_st;
     for (i = 0; i < g->n; i++) {
@@ -329,7 +350,15 @@ void prim(GraphType* g, int prim_st,int st_kind)
         u = e.end;
         //u = get_min_vertex(g->n); // 1 아래 과정에서 옮겨진 distance배열을 통해, 인접행렬사이의 가중치를 얻고, 가장 작은 값 출력
         selected[u] = TRUE;
-        if (distance[u].weight == INF) return;
+        switch (st_kind) {
+        case 0:
+            if (distance[u].weight == INF) 
+                return;
+        case 1:
+            if (distance[u].weight == -INF) 
+                return;
+        }
+        
         if (u != prim_st) {
             printf("간선 (%d,%d) %d 선택\n", e.start, e.end, e.weight);
             sum += e.weight;
@@ -350,7 +379,7 @@ void prim(GraphType* g, int prim_st,int st_kind)
         //해당 정점에서 이동가능한 간선들 distance배열에 업데이트
         for (v = 0; v < g->n; v++) {
             if (!selected[v]&&g->adj_mat[u][v]!=0) {
-                if (distance[v].weight < INF) {//이미 값이 존재하고 해당값이 INF가 아닐때
+                if (distance[v].weight != INF) {//이미 값이 존재하고 해당값이 INF가 아닐때
                     //업데이트 확인
                     switch (st_kind){
                     case 0: //distance의 값보다 더 작은 값일경우 작은값으로 distance값 업데이트 => 최소길이신장트리
@@ -362,7 +391,10 @@ void prim(GraphType* g, int prim_st,int st_kind)
                         break;
                     case 1: //distance의 값보다 더 큰 값일경우 더 큰값으로 distance값 업데이트 => 최대길이신장트리
                         if (g->adj_mat[u][v] > distance[v].weight&& g->adj_mat[u][v] != INF) {
-                            distance[v].weight = g->adj_mat[u][v];
+                            if (g->adj_mat[u][v] == INF)
+                                distance[v].weight = -g->adj_mat[u][v];
+                            else
+                                distance[v].weight = g->adj_mat[u][v];
                             distance[v].start = u;
                             distance[v].end = v;
                         }
@@ -370,13 +402,30 @@ void prim(GraphType* g, int prim_st,int st_kind)
                     }
                     continue;
                 } 
-                distance[v].weight = g->adj_mat[u][v];
+                //0인 경우
+                if (st_kind == 1) {
+                    distance[v].weight = -g->adj_mat[u][v];
+                }
+                else {
+                    distance[v].weight = g->adj_mat[u][v];
+                }
+                //distance[v].weight = g->adj_mat[u][v];
                 distance[v].start = u;
                 distance[v].end = v;
             }
-            if (g->adj_mat[u][v] == 0) {
-                distance[v].weight = INF;
+            switch (st_kind) {
+            case 0:
+                if (g->adj_mat[u][v] == 0) {
+                    distance[v].weight = INF;
+                }
+                break;
+            case 1:
+                if (g->adj_mat[u][v] == 0) {
+                    distance[v].weight = -INF;
+                }
+                break;
             }
+            
         }
     }
     switch (st_kind) {
