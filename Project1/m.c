@@ -110,6 +110,11 @@ int main(void)
     prim(g, prim_st, st_kind);
     //printf("입력되었습니다.\n");
 
+    printf("\n다익스트라 최단거리 알고리즘 \n");
+    printf("최단거리(0을 입력) 또는 최장거리(1을 입력)? "); scanf("%d", &st_kind);
+    printf("다익스트라 알고리즘을 시작할 정점의 번호입력 "); scanf("%d", &prim_st);
+    prim(g, prim_st, st_kind);
+    
 
     free(g);
     return 0;
@@ -253,6 +258,7 @@ void kruskal(GraphType* g,int st_kind)
         printf("최대 신장 트리 간선들의 합 = %d\n", sum);
         break;
     }
+    free(parent); //동적할당 반환
 }
 
 // 최소 dist[v] 값을 갖는 정점을 반환
@@ -437,4 +443,6 @@ void prim(GraphType* g, int prim_st,int st_kind)
         break;
 
     }
+    free(distance);
+    free(selected);
 }
