@@ -29,6 +29,8 @@ EdgeType* distance;
 //int* found;
 
 int** A; //플루이드 알고리즘에서 사용 2차원 배열이므로 2중 포인터로
+int* prev; //최단경로까지의 정점들을 표현하기 위한 배열
+//int* dist; //다익스트라 알고리즘과 플루이드 알고리즘에서 사용
 
 void set_init(int n);
 int set_find(int curr);
@@ -51,6 +53,7 @@ void dijkstra(GraphType* g, int start);
 void print_status(GraphType* g, int i, int* dist, int* found); //화면에 진행상황 출력
 void floyd(GraphType* g, int fl_st, int fl_end);
 void printA(GraphType* g); //2차원 배열 A 출력
+void print_prev(int* prev, int i); // 다익스트라 알고리즘에서 해당 정점까지의 경로 출력
 
 int main(void)
 {
@@ -120,7 +123,7 @@ int main(void)
     prim(&g, prim_st, st_kind);
     //printf("입력되었습니다.\n");
 
-    printf("\n다익스트라 최단거리 알고리즘 \n");
+    printf("\n\n다익스트라 최단거리 알고리즘 \n");
     printf("다익스트라 알고리즘을 시작할 정점의 번호입력 "); scanf("%d", &dijk_st);
     dijkstra(&g, dijk_st);
 
@@ -136,7 +139,6 @@ int main(void)
     }
     free(g.adj_mat);
 
-    //free(g);
     return 0;
 }
 
@@ -439,18 +441,22 @@ void prim(GraphType* g, int prim_st, int st_kind)
     }
 }
 
+
 //다익스트라 알고리즘
 void dijkstra(GraphType* g, int start)
 {
     int* dist;
     int* found;
-    dist = (int*)malloc(sizeof(int*) * g->n);
+    
+    dist = (int*)malloc(sizeof(int*) * g->n); //플루이드에서 재활용하기 위하여, 전역변수로 선언
     found = (int*)malloc(sizeof(int*) * g->n);
+    prev = (int*)malloc(sizeof(int*) * g->n);
     int i, u, w;
     for (i = 0; i < g->n; i++) /* 초기화 */
     {
         dist[i] = g->adj_mat[start][i];
         found[i] = FALSE;
+        prev[i] = -1; // 모두 -1로 초기화
     }
     found[start] = TRUE;    /* 시작 정점 방문 표시 */
     dist[start] = 0;
@@ -459,10 +465,34 @@ void dijkstra(GraphType* g, int start)
         print_status(g, i, dist, found);
         u = choose(dist, g->n, found);
         found[u] = TRUE;
-        for (w = 0; w < g->n; w++)
-            if (!found[w])
-                if (dist[u] + g->adj_mat[u][w] < dist[w])
+        for (w = 0; w < g->n; w++) {
+            if (!found[w]) {
+                if (dist[u] + g->adj_mat[u][w] < dist[w]) {
                     dist[w] = dist[u] + g->adj_mat[u][w];
+                    prev[w] = u; //u를 통과해 갔을때 가장 최소가 됨을 나타냄
+                } 
+            }   
+        }    
+    }
+
+    //prev 배열을 활용하여 최단거리 경로 표현
+    //start에서 다른 정점까지의 거리
+    for (i = 0; i < g->n; i++) {
+        printf("%2d -> ", start);
+        print_prev(prev, i);
+        printf("%2d  =  %2d\n",i, dist[i]); //목적지까지의 최단경로 비용 출력
+    }
+}
+
+//-1이 될때까지 재귀적으로 반복하여 해당 인덱스의 요소를 출력하고, 요소를 인덱스로 하여 반복 시행
+void print_prev(int* prev, int i) {
+    if (prev[i] == -1) {
+        //printf("%d -> ", i); //목적지 도착
+        return;
+    }
+    else {
+        print_prev(prev, prev[i]);//해당 인덱스를 요소로 하여 재귀 호출
+        printf("%2d -> ", prev[i]);//재귀 호출이 끝나면 해당 인덱스의 요소를 출력
     }
 }
 
@@ -481,17 +511,17 @@ int choose(int* dist, int n, int* found)
 
 
 void print_status(GraphType* g, int i, int* dist, int* found) {
-    printf("STEP %d : distance: ", i + 1);
+    printf("STEP %2d : distance: ", i + 1);
     for (int i = 0; i < g->n; i++) {
         if (dist[i] == INF)
-            printf("*\t");
+            printf("  * ");
         else
-            printf("%d\t", dist[i]);
+            printf("%3d ", dist[i]);
     }
     printf("\n");
-    printf("            found: ");
+    printf("             found: ");
     for (int i = 0; i < g->n; i++) {
-        printf("%d\t", found[i]);
+        printf("%3d ", found[i]);
     }
     printf("\n\n");
 }
@@ -499,7 +529,7 @@ void print_status(GraphType* g, int i, int* dist, int* found) {
 void floyd(GraphType* g, int fl_st, int fl_end)
 {
     //2차원 배열 A 생성
-    A = (int**)malloc(sizeof(int*) * g->n);
+    A = (int**)malloc(sizeof(int**) * g->n);
     for (int i = 0; i < g->n; i++) {
         A[i] = (int*)malloc(sizeof(int*) * g->n);
     }
@@ -512,26 +542,32 @@ void floyd(GraphType* g, int fl_st, int fl_end)
             //printf("A[%d][%d] = %d ", i, j, A[i][j]);
         }
 
-
     printA(g); //초기 2차원 배열 
 
     for (k = 0; k < g->n; k++) {
         for (i = 0; i < g->n; i++)
-            for (j = 0; j < g->n; j++)
-                if (A[i][k] + A[k][j] < A[i][j])
+            for (j = 0; j < g->n; j++) {
+                if (A[i][k] + A[k][j] < A[i][j]) {
                     A[i][j] = A[i][k] + A[k][j];
+                }
+                    
+            }
+                
     }
     printA(g);
 
     //입력 받은 노드의 최단 경로 표현
     //fl_st -> fl_end
-    printf("%d -> %d = %d\n", fl_st, fl_end, A[fl_st][fl_end]);
+    printf("%2d -> ", fl_st);
+    print_prev(prev, fl_end);
+    printf("%2d  =  %2d\n", fl_end, A[fl_st][fl_end]); //목적지까지의 최단경로 비용 출력
     printf("%d to %d with Floyd's shortest path(%d)\n", fl_st,fl_end,A[fl_st][fl_end]);
 
     for (int i = 0; i < g->n; i++) {
         free(A[i]);
     }
     free(A);
+    free(prev);
 }
 
 //2차원 배열 A에 대한 상황 출력
