@@ -15,8 +15,18 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="m.c">
+    <ClCompile Include="graph.c">
       <Filter>소스 파일</Filter>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="graph.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="graph.txt">
+      <Filter>헤더 파일</Filter>
+    </Text>
   </ItemGroup>
 </Project>

@@ -1,9 +1,3 @@
-#define _CRT_SECURE_NO_WARNINGS
-#include <stdio.h>
-#include <stdlib.h>
-#include <malloc.h>
-#include <limits.h>
-
 #define TRUE 1
 #define FALSE 0
 
@@ -25,122 +19,12 @@ int* parent;
 int* selected;
 EdgeType* distance;
 
-//int* dist; //다익스트라 알고리즘에서 사용
-//int* found;
+int* dist; //다익스트라 알고리즘에서 사용
+int* found;
 
 int** A; //플루이드 알고리즘에서 사용 2차원 배열이므로 2중 포인터로
 int* prev; //최단경로까지의 정점들을 표현하기 위한 배열
 //int* dist; //다익스트라 알고리즘과 플루이드 알고리즘에서 사용
-
-void set_init(int n);
-int set_find(int curr);
-void set_union(int a, int b);
-//void graph_init(GraphType* g);
-void insert_edge(GraphType* g, int start, int end, int w);
-//int compare(const void* a, const void* b);
-void kruskal(GraphType* g, int st_kind);
-//퀵정렬용
-void quickSort(int data[], int start, int end);
-int getPivot(struct Edge* edges, int start, int end);
-int getPivot2(struct Edge* edges, int start, int end);
-// 최소 dist[v] 값을 갖는 정점을 반환
-//int get_min_vertex(int n);
-struct Edge get_min_edge(int n);
-struct Edge get_max_edge(int n);
-void prim(GraphType* g, int prim_st, int st_kind);
-int choose(int* dist, int n, int* found);
-void dijkstra(GraphType* g, int start);
-void print_status(GraphType* g, int i, int* dist, int* found); //화면에 진행상황 출력
-void floyd(GraphType* g, int fl_st, int fl_end);
-void printA(GraphType* g); //2차원 배열 A 출력
-void print_prev(int* prev, int i); // 다익스트라 알고리즘에서 해당 정점까지의 경로 출력
-
-int main(void)
-{
-    GraphType g;
-    //g = (GraphType*)malloc(sizeof(GraphType));
-
-
-    int num_node, i, j, max_e, prim_st, dijk_st, fl_st, fl_end;
-    printf("n을 입력 : ");
-    scanf_s("%d", &num_node);
-
-    g.n = num_node;
-    g.n_e = 0; //?
-
-    max_e = num_node * num_node / 2;
-    g.edges = (struct Edge*)malloc(sizeof(struct Edge) * max_e);
-    for (i = 0; i < max_e; i++) {
-        g.edges[i].start = g.edges[i].end = 0;
-        g.edges[i].weight = INF;
-    }
-
-
-    //2차원 행렬 생성 n x n 크기의 행렬 (n은 노드의 개수)
-    g.adj_mat = (int**)malloc(sizeof(int*) * num_node);      // 인접행렬 표현
-    for (i = 0; i < num_node; i++) {
-        g.adj_mat[i] = (int*)malloc(sizeof(int) * num_node);
-        for (j = 0; j < num_node; j++)
-            g.adj_mat[i][j] = 0; //인접행렬 초기화
-    }
-
-    //사용자로부터 인접행렬 정보 입력받기
-    for (i = 0; i < num_node; i++) {
-        for (j = 0; j < num_node; j++)
-            scanf_s("%d", &(g.adj_mat[i][j]));
-    }
-
-    // 인접행렬에서 LL을 이용한 간선 리스트 만들기 for Kruskal alg.
-    for (i = 0; i < num_node; i++) {
-        for (j = 0; j < i; j++)
-            if (g.adj_mat[i][j] > 0 && g.adj_mat[i][j] != INF) {   // only valid edges
-                g.edges[g.n_e].start = i;   // 노드 번호는 1부터 시작
-                g.edges[g.n_e].end = j;
-                g.edges[g.n_e++].weight = g.adj_mat[i][j];
-            }
-    }
-
-    //for (int i = 0; i < g->n_e; i++) {
-        //printf("edges[%d] (%d, %d),%d\n", i, g->edges[i].start, g->edges[i].end, g->edges[i].weight);
-    //}
-
-    printf("\n그래프 인접행렬 표현: \n");
-    for (i = 0; i < num_node; i++) {
-        for (j = 0; j < num_node; j++)
-            printf("%3d ", g.adj_mat[i][j]);
-        printf("\n");
-    }
-    printf("\n");
-
-    int st_kind;
-    printf("크루스칼 신장 트리 알고리즘 \n");
-    printf("최소(0을 입력) 또는 최대(1을 입력) 신장 트리? "); scanf_s("%d", &st_kind);
-    kruskal(&g, st_kind);
-
-    printf("\n프림 최소 신장 트리 알고리즘 \n");
-    printf("최소(0을 입력) 또는 최대(1을 입력) 신장 트리? "); scanf("%d", &st_kind);
-    printf("프림 알고리즘을 위한 출발 노드 번호? "); scanf("%d", &prim_st);
-    prim(&g, prim_st, st_kind);
-    //printf("입력되었습니다.\n");
-
-    printf("\n\n다익스트라 최단거리 알고리즘 \n");
-    printf("다익스트라 알고리즘을 시작할 정점의 번호입력 "); scanf("%d", &dijk_st);
-    dijkstra(&g, dijk_st);
-
-    //플루이드 알고리즘 작성 위치
-    printf("\nFloyd 최단 경로 알고리즘을 위한 출발 노드 번호와 도착 노드 번호? ");
-    scanf("%d %d", &fl_st, &fl_end);
-    floyd(&g, fl_st, fl_end);
-
-
-    free(g.edges);
-    for (i = 0; i < num_node; i++) {
-        free(g.adj_mat[i]);
-    }
-    free(g.adj_mat);
-
-    return 0;
-}
 
 // 초기화
 void set_init(int n)
@@ -149,17 +33,6 @@ void set_init(int n)
     for (int i = 0; i < n; i++)
         parent[i] = -1;
 }
-
-// 그래프 초기화 
-//void graph_init(GraphType* g)
-//{
-//    g->n = 0;
-//    for (int i = 0; i < 2 * MAX_VERTICES; i++) {
-//        g->edges[i].start = 0;
-//        g->edges[i].end = 0;
-//        g->edges[i].weight = INF;
-    //}
-//}
 
 // curr가 속하는 집합을 반환한다.
 int set_find(int curr)
@@ -194,7 +67,7 @@ void quickSort(struct Edge* edges, int start, int end, int op) {
         case 0://0이면 최소신장
             pivot = getPivot(edges, start, end);
             break;
-        case 1:
+        case 1://1이면 최대신장
             pivot = getPivot2(edges, start, end);
             break;
         }
@@ -203,6 +76,7 @@ void quickSort(struct Edge* edges, int start, int end, int op) {
     }
 }
 
+//오름 차순 정렬
 int getPivot(struct Edge* edges, int start, int end) {
     int i = start - 1, j;
     struct Edge* data = edges;
@@ -221,7 +95,7 @@ int getPivot(struct Edge* edges, int start, int end) {
     return i + 1;
 }
 
-//내림 차순
+//내림 차순 정렬
 int getPivot2(struct Edge* edges, int start, int end) {
     int i = start - 1, j;
     struct Edge* data = edges;
@@ -319,7 +193,6 @@ void prim(GraphType* g, int prim_st, int st_kind)
     struct Edge e;
     //distance, selected 배열 정점 크기로 초기화
     distance = (EdgeType*)malloc(sizeof(EdgeType*) * g->n);
-    //distance = (int*)malloc(sizeof(int*) * g->n);
     selected = (int*)malloc(sizeof(int*) * g->n);
 
     switch (st_kind) {
@@ -441,14 +314,42 @@ void prim(GraphType* g, int prim_st, int st_kind)
     }
 }
 
+void print_status(GraphType* g, int i, int* dist, int* found) {
+    printf("STEP %2d : distance: ", i + 1);
+    for (int i = 0; i < g->n; i++) {
+        if (dist[i] == INF)
+            printf("  * ");
+        else
+            printf("%3d ", dist[i]);
+    }
+    printf("\n");
+    printf("             found: ");
+    for (int i = 0; i < g->n; i++) {
+        printf("%3d ", found[i]);
+    }
+    printf("\n\n");
+}
+
+//-1이 될때까지 재귀적으로 반복하여 해당 인덱스의 요소를 출력하고, 요소를 인덱스로 하여 반복 시행
+void print_prev(int* prev, int i) {
+    if (prev[i] == -1) {
+        //printf("%d -> ", i); //목적지 도착
+        return;
+    }
+    else {
+        print_prev(prev, prev[i]);//해당 인덱스를 요소로 하여 재귀 호출
+        printf("%2d -> ", prev[i]);//재귀 호출이 끝나면 해당 인덱스의 요소를 출력
+    }
+}
+
 
 //다익스트라 알고리즘
 void dijkstra(GraphType* g, int start)
 {
-    int* dist;
-    int* found;
-    
-    dist = (int*)malloc(sizeof(int*) * g->n); //플루이드에서 재활용하기 위하여, 전역변수로 선언
+    //int* dist;
+    //int* found;
+
+    dist = (int*)malloc(sizeof(int*) * g->n);
     found = (int*)malloc(sizeof(int*) * g->n);
     prev = (int*)malloc(sizeof(int*) * g->n);
     int i, u, w;
@@ -470,9 +371,9 @@ void dijkstra(GraphType* g, int start)
                 if (dist[u] + g->adj_mat[u][w] < dist[w]) {
                     dist[w] = dist[u] + g->adj_mat[u][w];
                     prev[w] = u; //u를 통과해 갔을때 가장 최소가 됨을 나타냄
-                } 
-            }   
-        }    
+                }
+            }
+        }
     }
 
     //prev 배열을 활용하여 최단거리 경로 표현
@@ -480,21 +381,11 @@ void dijkstra(GraphType* g, int start)
     for (i = 0; i < g->n; i++) {
         printf("%2d -> ", start);
         print_prev(prev, i);
-        printf("%2d  =  %2d\n",i, dist[i]); //목적지까지의 최단경로 비용 출력
+        printf("%2d  =  %2d\n", i, dist[i]); //목적지까지의 최단경로 비용 출력
     }
 }
 
-//-1이 될때까지 재귀적으로 반복하여 해당 인덱스의 요소를 출력하고, 요소를 인덱스로 하여 반복 시행
-void print_prev(int* prev, int i) {
-    if (prev[i] == -1) {
-        //printf("%d -> ", i); //목적지 도착
-        return;
-    }
-    else {
-        print_prev(prev, prev[i]);//해당 인덱스를 요소로 하여 재귀 호출
-        printf("%2d -> ", prev[i]);//재귀 호출이 끝나면 해당 인덱스의 요소를 출력
-    }
-}
+
 
 int choose(int* dist, int n, int* found)
 {
@@ -510,20 +401,20 @@ int choose(int* dist, int n, int* found)
 }
 
 
-void print_status(GraphType* g, int i, int* dist, int* found) {
-    printf("STEP %2d : distance: ", i + 1);
+//2차원 배열 A에 대한 상황 출력
+void printA(GraphType* g) {
+    printf("========================================\n");
     for (int i = 0; i < g->n; i++) {
-        if (dist[i] == INF)
-            printf("  * ");
-        else
-            printf("%3d ", dist[i]);
+        for (int j = 0; j < g->n; j++) {
+            if (A[i][j] == INF)
+                printf("  * ");
+            else
+                printf("%3d ", A[i][j]);
+        }
+        printf("\n");
     }
-    printf("\n");
-    printf("             found: ");
-    for (int i = 0; i < g->n; i++) {
-        printf("%3d ", found[i]);
-    }
-    printf("\n\n");
+    printf("========================================\n");
+
 }
 
 void floyd(GraphType* g, int fl_st, int fl_end)
@@ -550,9 +441,9 @@ void floyd(GraphType* g, int fl_st, int fl_end)
                 if (A[i][k] + A[k][j] < A[i][j]) {
                     A[i][j] = A[i][k] + A[k][j];
                 }
-                    
+
             }
-                
+
     }
     printA(g);
 
@@ -561,7 +452,7 @@ void floyd(GraphType* g, int fl_st, int fl_end)
     printf("%2d -> ", fl_st);
     print_prev(prev, fl_end);
     printf("%2d  =  %2d\n", fl_end, A[fl_st][fl_end]); //목적지까지의 최단경로 비용 출력
-    printf("%d to %d with Floyd's shortest path(%d)\n", fl_st,fl_end,A[fl_st][fl_end]);
+    printf("%d to %d with Floyd's shortest path(%d)\n", fl_st, fl_end, A[fl_st][fl_end]);
 
     for (int i = 0; i < g->n; i++) {
         free(A[i]);
@@ -570,18 +461,3 @@ void floyd(GraphType* g, int fl_st, int fl_end)
     free(prev);
 }
 
-//2차원 배열 A에 대한 상황 출력
-void printA(GraphType* g) {
-    printf("========================================\n");
-    for (int i = 0; i < g->n; i++) {
-        for (int j = 0; j < g->n; j++) {
-            if (A[i][j] == INF)
-                printf("  * ");
-            else
-                printf("%3d ", A[i][j]);
-        }
-        printf("\n");
-    }
-    printf("========================================\n");
-
-}
