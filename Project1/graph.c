@@ -6,7 +6,7 @@
 #include "graph.h"
 
 
-// ÇÁ·ÎÁ§Æ® ¼Ó¼º -> µğ¹ö±ë -> ¸í·ÉÀÎ¼ö -> graph.txt -> È®ÀÎ
+// í”„ë¡œì íŠ¸ ì†ì„± -> ë””ë²„ê¹… -> ëª…ë ¹ì¸ìˆ˜ -> graph.txt -> í™•ì¸
 
 void main(int argc, char* argv[])
 {
@@ -33,7 +33,7 @@ void main(int argc, char* argv[])
 			g.edges[i].weight = INF;
 		}
 
-		g.adj_mat = (int**)malloc(sizeof(int*) * num_node);		// ÀÎÁ¢Çà·Ä Ç¥Çö
+		g.adj_mat = (int**)malloc(sizeof(int*) * num_node);		// ì¸ì ‘í–‰ë ¬ í‘œí˜„
 		for (i = 0; i < num_node; i++) {
 			g.adj_mat[i] = (int*)malloc(sizeof(int) * num_node);
 			for (j = 0; j < num_node; j++)
@@ -41,23 +41,23 @@ void main(int argc, char* argv[])
 		}
 
 
-		//ÆÄÀÏ·ÎºÎÅÍ ÀÎÁ¢Çà·Ä Á¤º¸ ÀÔ·Â¹Ş±â
+		//íŒŒì¼ë¡œë¶€í„° ì¸ì ‘í–‰ë ¬ ì •ë³´ ì…ë ¥ë°›ê¸°
 		for (i = 0; i < num_node; i++) {
 			for (j = 0; j < num_node; j++)
 				fscanf_s(fp, "%d", &(g.adj_mat[i][j]));
 		}
 
-		// ÀÎÁ¢Çà·Ä¿¡¼­ LLÀ» ÀÌ¿ëÇÑ °£¼± ¸®½ºÆ® ¸¸µé±â for Kruskal alg.
+		// ì¸ì ‘í–‰ë ¬ì—ì„œ LLì„ ì´ìš©í•œ ê°„ì„  ë¦¬ìŠ¤íŠ¸ ë§Œë“¤ê¸° for Kruskal alg.
 		for (i = 0; i < num_node; i++) {
 			for (j = 0; j < i; j++)
 				if (g.adj_mat[i][j] > 0 && g.adj_mat[i][j] != INF) {   // only valid edges
-					g.edges[g.n_e].start = i;   // ³ëµå ¹øÈ£´Â 1ºÎÅÍ ½ÃÀÛ
+					g.edges[g.n_e].start = i;   // ë…¸ë“œ ë²ˆí˜¸ëŠ” 1ë¶€í„° ì‹œì‘
 					g.edges[g.n_e].end = j;
 					g.edges[g.n_e++].weight = g.adj_mat[i][j];
 				}
 		}
 
-		printf("\n±×·¡ÇÁ ÀÎÁ¢Çà·Ä Ç¥Çö: \n");
+		printf("\nê·¸ë˜í”„ ì¸ì ‘í–‰ë ¬ í‘œí˜„: \n");
 		for (i = 0; i < num_node; i++) {
 			for (j = 0; j < num_node; j++)
 				printf("%3d ", g.adj_mat[i][j]);
@@ -65,27 +65,28 @@ void main(int argc, char* argv[])
 		}
 		printf("\n");
 
-		printf("1991026 ÃÖ°­ ¾Ë°í¸®Áò °úÁ¦\n");
-		printf("Á¤Á¡Àº 0ºÎÅÍ ½ÃÀÛÇÑ´Ù°í °¡Á¤\n\n");
+		printf("1991026 ìµœê°• ì•Œê³ ë¦¬ì¦˜ ê³¼ì œ\n\n");
+
 		// MST program
-		printf("Å©·ç½ºÄ® ½ÅÀå Æ®¸® ¾Ë°í¸®Áò \n");
-		printf("ÃÖ¼Ò(0À» ÀÔ·Â) ¶Ç´Â ÃÖ´ë(1À» ÀÔ·Â) ½ÅÀå Æ®¸®? "); scanf_s("%d", &st_kind);
+		printf("í¬ë£¨ìŠ¤ì¹¼ ì‹ ì¥ íŠ¸ë¦¬ ì•Œê³ ë¦¬ì¦˜ \n");
+		printf("ìµœì†Œ(0ì„ ì…ë ¥) ë˜ëŠ” ìµœëŒ€(1ì„ ì…ë ¥) ì‹ ì¥ íŠ¸ë¦¬? "); scanf_s("%d", &st_kind);
 		kruskal(&g, st_kind);
 
-		printf("\nÇÁ¸² ÃÖ¼Ò ½ÅÀå Æ®¸® ¾Ë°í¸®Áò \n");
-		printf("ÃÖ¼Ò(0À» ÀÔ·Â) ¶Ç´Â ÃÖ´ë(1À» ÀÔ·Â) ½ÅÀå Æ®¸®? "); scanf_s("%d", &st_kind);
-		printf("ÇÁ¸² ¾Ë°í¸®ÁòÀ» À§ÇÑ Ãâ¹ß ³ëµå ¹øÈ£? "); scanf_s("%d", &prim_st);
-		prim(&g, prim_st-1, st_kind);
-		//printf("ÀÔ·ÂµÇ¾ú½À´Ï´Ù.\n");
+		printf("\ní”„ë¦¼ ìµœì†Œ ì‹ ì¥ íŠ¸ë¦¬ ì•Œê³ ë¦¬ì¦˜ \n");
+		printf("ìµœì†Œ(0ì„ ì…ë ¥) ë˜ëŠ” ìµœëŒ€(1ì„ ì…ë ¥) ì‹ ì¥ íŠ¸ë¦¬? "); scanf_s("%d", &st_kind);
+		printf("í”„ë¦¼ ì•Œê³ ë¦¬ì¦˜ì„ ìœ„í•œ ì¶œë°œ ë…¸ë“œ ë²ˆí˜¸? "); scanf_s("%d", &prim_st);
+		prim(&g, prim_st - 1, st_kind);
+		//printf("ì…ë ¥ë˜ì—ˆìŠµë‹ˆë‹¤.\n");
 
-		printf("\n\n´ÙÀÍ½ºÆ®¶ó ÃÖ´Ü°Å¸® ¾Ë°í¸®Áò \n");
-		printf("´ÙÀÍ½ºÆ®¶ó ¾Ë°í¸®ÁòÀ» ½ÃÀÛÇÒ Á¤Á¡ÀÇ ¹øÈ£ÀÔ·Â "); scanf_s("%d", &dijk_st);
+		printf("\n\në‹¤ìµìŠ¤íŠ¸ë¼ ìµœë‹¨ê±°ë¦¬ ì•Œê³ ë¦¬ì¦˜ \n");
+		printf("ë‹¤ìµìŠ¤íŠ¸ë¼ ì•Œê³ ë¦¬ì¦˜ì„ ì‹œì‘í•  ì •ì ì˜ ë²ˆí˜¸ì…ë ¥ "); scanf_s("%d", &dijk_st);
+		dijkstra(&g, dijk_st - 1);
 		dijkstra(&g, dijk_st-1);
 
-		//ÇÃ·çÀÌµå ¾Ë°í¸®Áò ÀÛ¼º À§Ä¡
-		printf("\nFloyd ÃÖ´Ü °æ·Î ¾Ë°í¸®ÁòÀ» À§ÇÑ Ãâ¹ß ³ëµå ¹øÈ£¿Í µµÂø ³ëµå ¹øÈ£? ");
+		//í”Œë£¨ì´ë“œ ì•Œê³ ë¦¬ì¦˜ ì‘ì„± ìœ„ì¹˜
+		printf("\nFloyd ìµœë‹¨ ê²½ë¡œ ì•Œê³ ë¦¬ì¦˜ì„ ìœ„í•œ ì¶œë°œ ë…¸ë“œ ë²ˆí˜¸ì™€ ë„ì°© ë…¸ë“œ ë²ˆí˜¸? ");
 		scanf_s("%d %d", &fl_st, &fl_end);
-		floyd(&g, fl_st-1, fl_end-1);
+		floyd(&g, fl_st - 1, fl_end - 1);
 
 		free(g.edges);
 		for (i = 0; i < num_node; i++) {

@@ -4,29 +4,29 @@
 //#define MAX_VERTICES 100
 #define INF 999
 
-typedef struct Edge {         // °£¼±À» ³ªÅ¸³»´Â ±¸Á¶Ã¼
+typedef struct Edge {         // ê°„ì„ ì„ ë‚˜íƒ€ë‚´ëŠ” êµ¬ì¡°ì²´
     int start, end, weight;
 }EdgeType;
 
 typedef struct GraphType {
-    int n;               // Á¤Á¡ÀÇ °³¼ö
-    int n_e;            // °£¼±ÀÇ °³¼ö
-    int** adj_mat;         // ÀÎÁ¢ Çà·Ä
-    struct Edge* edges;      // °£¼± Á¤º¸
+    int n;               // ì •ì ì˜ ê°œìˆ˜
+    int n_e;            // ê°„ì„ ì˜ ê°œìˆ˜
+    int** adj_mat;         // ì¸ì ‘ í–‰ë ¬
+    struct Edge* edges;      // ê°„ì„  ì •ë³´
 }GraphType;
 
 int* parent;
 int* selected;
 EdgeType* distance;
 
-int* dist; //´ÙÀÍ½ºÆ®¶ó ¾Ë°í¸®Áò¿¡¼­ »ç¿ë
+int* dist; //ë‹¤ìµìŠ¤íŠ¸ë¼ ì•Œê³ ë¦¬ì¦˜ì—ì„œ ì‚¬ìš©
 int* found;
 
-int** A; //ÇÃ·çÀÌµå ¾Ë°í¸®Áò¿¡¼­ »ç¿ë 2Â÷¿ø ¹è¿­ÀÌ¹Ç·Î 2Áß Æ÷ÀÎÅÍ·Î
-int* prev; //ÃÖ´Ü°æ·Î±îÁöÀÇ Á¤Á¡µéÀ» Ç¥ÇöÇÏ±â À§ÇÑ ¹è¿­
-//int* dist; //´ÙÀÍ½ºÆ®¶ó ¾Ë°í¸®Áò°ú ÇÃ·çÀÌµå ¾Ë°í¸®Áò¿¡¼­ »ç¿ë
+int** A; //í”Œë£¨ì´ë“œ ì•Œê³ ë¦¬ì¦˜ì—ì„œ ì‚¬ìš© 2ì°¨ì› ë°°ì—´ì´ë¯€ë¡œ 2ì¤‘ í¬ì¸í„°ë¡œ
+int* prev; //ìµœë‹¨ê²½ë¡œê¹Œì§€ì˜ ì •ì ë“¤ì„ í‘œí˜„í•˜ê¸° ìœ„í•œ ë°°ì—´
+//int* dist; //ë‹¤ìµìŠ¤íŠ¸ë¼ ì•Œê³ ë¦¬ì¦˜ê³¼ í”Œë£¨ì´ë“œ ì•Œê³ ë¦¬ì¦˜ì—ì„œ ì‚¬ìš©
 
-// ÃÊ±âÈ­
+// ì´ˆê¸°í™”
 void set_init(int n)
 {
     parent = (int*)malloc(sizeof(int) * n);
@@ -34,24 +34,24 @@ void set_init(int n)
         parent[i] = -1;
 }
 
-// curr°¡ ¼ÓÇÏ´Â ÁıÇÕÀ» ¹İÈ¯ÇÑ´Ù.
+// currê°€ ì†í•˜ëŠ” ì§‘í•©ì„ ë°˜í™˜í•œë‹¤.
 int set_find(int curr)
 {
     if (parent[curr] == -1)
-        return curr;          // ·çÆ® 
+        return curr;          // ë£¨íŠ¸ 
     while (parent[curr] != -1) curr = parent[curr];
     return curr;
 }
 
 void set_union(int a, int b)
 {
-    int root1 = set_find(a);   // ³ëµå aÀÇ ·çÆ®¸¦ Ã£´Â´Ù. 
-    int root2 = set_find(b);   // ³ëµå bÀÇ ·çÆ®¸¦ Ã£´Â´Ù. 
-    if (root1 != root2)       // ÇÕÇÑ´Ù. 
+    int root1 = set_find(a);   // ë…¸ë“œ aì˜ ë£¨íŠ¸ë¥¼ ì°¾ëŠ”ë‹¤. 
+    int root2 = set_find(b);   // ë…¸ë“œ bì˜ ë£¨íŠ¸ë¥¼ ì°¾ëŠ”ë‹¤. 
+    if (root1 != root2)       // í•©í•œë‹¤. 
         parent[root1] = root2;
 }
 
-// °£¼± »ğÀÔ ¿¬»ê
+// ê°„ì„  ì‚½ì… ì—°ì‚°
 void insert_edge(GraphType* g, int start, int end, int w)
 {
     g->edges[g->n].start = start;
@@ -64,10 +64,10 @@ void quickSort(struct Edge* edges, int start, int end, int op) {
     if (start < end) {
         int pivot;
         switch (op) {
-        case 0://0ÀÌ¸é ÃÖ¼Ò½ÅÀå
+        case 0://0ì´ë©´ ìµœì†Œì‹ ì¥
             pivot = getPivot(edges, start, end);
             break;
-        case 1://1ÀÌ¸é ÃÖ´ë½ÅÀå
+        case 1://1ì´ë©´ ìµœëŒ€ì‹ ì¥
             pivot = getPivot2(edges, start, end);
             break;
         }
@@ -76,7 +76,7 @@ void quickSort(struct Edge* edges, int start, int end, int op) {
     }
 }
 
-//¿À¸§ Â÷¼ø Á¤·Ä
+//ì˜¤ë¦„ ì°¨ìˆœ ì •ë ¬
 int getPivot(struct Edge* edges, int start, int end) {
     int i = start - 1, j;
     struct Edge* data = edges;
@@ -95,7 +95,7 @@ int getPivot(struct Edge* edges, int start, int end) {
     return i + 1;
 }
 
-//³»¸² Â÷¼ø Á¤·Ä
+//ë‚´ë¦¼ ì°¨ìˆœ ì •ë ¬
 int getPivot2(struct Edge* edges, int start, int end) {
     int i = start - 1, j;
     struct Edge* data = edges;
@@ -114,50 +114,50 @@ int getPivot2(struct Edge* edges, int start, int end) {
     return i + 1;
 }
 
-// kruskalÀÇ ÃÖ¼Ò ºñ¿ë ½ÅÀå Æ®¸® ÇÁ·Î±×·¥
+// kruskalì˜ ìµœì†Œ ë¹„ìš© ì‹ ì¥ íŠ¸ë¦¬ í”„ë¡œê·¸ë¨
 void kruskal(GraphType* g, int st_kind)
 {
-    int edge_accepted = 0;   // ÇöÀç±îÁö ¼±ÅÃµÈ °£¼±ÀÇ ¼ö   
-    int uset, vset;      // Á¤Á¡ u¿Í Á¤Á¡ vÀÇ ÁıÇÕ ¹øÈ£
+    int edge_accepted = 0;   // í˜„ì¬ê¹Œì§€ ì„ íƒëœ ê°„ì„ ì˜ ìˆ˜   
+    int uset, vset;      // ì •ì  uì™€ ì •ì  vì˜ ì§‘í•© ë²ˆí˜¸
     int sum = 0;
     struct Edge e;
 
-    set_init(g->n);      // ÁıÇÕ ÃÊ±âÈ­
+    set_init(g->n);      // ì§‘í•© ì´ˆê¸°í™”
 
-    //stdlib.hÀÇ qsort()·Î´Â °°Àº ¼ıÀÚÀÇ °æ¿ì Á¤·ÄÀÌ ÀÌ·ç¾îÁöÁö¾ÊÀ½ => Äü Á¤·Ä ¾Ë°í¸®ÁòÀ» »õ·ÎÀÌ ÀÛ¼º
+    //stdlib.hì˜ qsort()ë¡œëŠ” ê°™ì€ ìˆ«ìì˜ ê²½ìš° ì •ë ¬ì´ ì´ë£¨ì–´ì§€ì§€ì•ŠìŒ => í€µ ì •ë ¬ ì•Œê³ ë¦¬ì¦˜ì„ ìƒˆë¡œì´ ì‘ì„±
     quickSort(g->edges, 0, g->n_e - 1, st_kind);
 
     //for (int i = 0; i < g->n_e; i++) {
-        //printf("%d¹øÂ° °£¼±, (%d,%d) %d\n", i, g->edges[i].start, g->edges[i].end, g->edges[i].weight);
+        //printf("%dë²ˆì§¸ ê°„ì„ , (%d,%d) %d\n", i, g->edges[i].start, g->edges[i].end, g->edges[i].weight);
     //}
 
     int i = 0;
-    while (edge_accepted < g->n - 1)   // ½ÅÀåÆ®¸® °£¼±ÀÇ ¼ö = (n-1)
+    while (edge_accepted < g->n - 1)   // ì‹ ì¥íŠ¸ë¦¬ ê°„ì„ ì˜ ìˆ˜ = (n-1)
     {
         e = g->edges[i];
-        uset = set_find(e.start);   // Á¤Á¡ uÀÇ ÁıÇÕ ¹øÈ£ 
-        vset = set_find(e.end);      // Á¤Á¡ vÀÇ ÁıÇÕ ¹øÈ£
-        if (uset != vset) {      // ¼­·Î ¼ÓÇÑ ÁıÇÕÀÌ ´Ù¸£¸é
-            printf("°£¼± (%d,%d) %d ¼±ÅÃ\n", e.start+1, e.end+1, e.weight);
+        uset = set_find(e.start);   // ì •ì  uì˜ ì§‘í•© ë²ˆí˜¸ 
+        vset = set_find(e.end);      // ì •ì  vì˜ ì§‘í•© ë²ˆí˜¸
+        if (uset != vset) {      // ì„œë¡œ ì†í•œ ì§‘í•©ì´ ë‹¤ë¥´ë©´
+            printf("ê°„ì„  (%d,%d) %d ì„ íƒ\n", e.start + 1, e.end + 1, e.weight);
             sum += e.weight;
             edge_accepted++;
-            set_union(uset, vset);   // µÎ°³ÀÇ ÁıÇÕÀ» ÇÕÄ£´Ù.
+            set_union(uset, vset);   // ë‘ê°œì˜ ì§‘í•©ì„ í•©ì¹œë‹¤.
         }
         i++;
     }
     switch (st_kind)
     {
     case 0:
-        printf("ÃÖ¼Ò ½ÅÀå Æ®¸® °£¼±µéÀÇ ÇÕ = %d\n", sum);
+        printf("ìµœì†Œ ì‹ ì¥ íŠ¸ë¦¬ ê°„ì„ ë“¤ì˜ í•© = %d\n", sum);
         break;
     case 1:
-        printf("ÃÖ´ë ½ÅÀå Æ®¸® °£¼±µéÀÇ ÇÕ = %d\n", sum);
+        printf("ìµœëŒ€ ì‹ ì¥ íŠ¸ë¦¬ ê°„ì„ ë“¤ì˜ í•© = %d\n", sum);
         break;
     }
-    free(parent); //µ¿ÀûÇÒ´ç ¹İÈ¯
+    free(parent); //ë™ì í• ë‹¹ ë°˜í™˜
 }
 
-//ÃÖ¼Ò±æÀÌÀÇ °£¼± ¸®ÅÏ
+//ìµœì†Œê¸¸ì´ì˜ ê°„ì„  ë¦¬í„´
 struct Edge get_min_edge(int n) {
 
     int v, i;
@@ -171,7 +171,7 @@ struct Edge get_min_edge(int n) {
     return distance[v];
 }
 
-//ÃÖ´ë±æÀÌÀÇ °£¼± ¸®ÅÏ
+//ìµœëŒ€ê¸¸ì´ì˜ ê°„ì„  ë¦¬í„´
 struct Edge get_max_edge(int n) {
 
     int v, i;
@@ -191,21 +191,21 @@ void prim(GraphType* g, int prim_st, int st_kind)
 {
     int i, u, v, sum = 0;
     struct Edge e;
-    //distance, selected ¹è¿­ Á¤Á¡ Å©±â·Î ÃÊ±âÈ­
+    //distance, selected ë°°ì—´ ì •ì  í¬ê¸°ë¡œ ì´ˆê¸°í™”
     distance = (EdgeType*)malloc(sizeof(EdgeType*) * g->n);
     selected = (int*)malloc(sizeof(int*) * g->n);
 
     switch (st_kind) {
     case 0:
-        //distanceÀÇ ¸ğµç°ª INF·Î ÃÊ±âÈ­
+        //distanceì˜ ëª¨ë“ ê°’ INFë¡œ ì´ˆê¸°í™”
         for (u = 0; u < g->n; u++) {
             distance[u].weight = INF;
             selected[u] = FALSE;
         }
         break;
     case 1:
-        //ÃÖ´ëºñ¿ë ½ÅÀåÆ®¸®ÀÇ °æ¿ì
-        //distanceÀÇ ¸ğµç°ª -INF·Î ÃÊ±âÈ­
+        //ìµœëŒ€ë¹„ìš© ì‹ ì¥íŠ¸ë¦¬ì˜ ê²½ìš°
+        //distanceì˜ ëª¨ë“ ê°’ -INFë¡œ ì´ˆê¸°í™”
         for (u = 0; u < g->n; u++) {
             distance[u].weight = -INF;
             selected[u] = FALSE;
@@ -215,10 +215,10 @@ void prim(GraphType* g, int prim_st, int st_kind)
 
     switch (st_kind) {
     case 0:
-        distance[prim_st].weight = 0; //ÃÖ¼Òºñ¿ë ½ÅÀåÆ®¸®ÀÇ °æ¿ì
+        distance[prim_st].weight = 0; //ìµœì†Œë¹„ìš© ì‹ ì¥íŠ¸ë¦¬ì˜ ê²½ìš°
         break;
     case 1:
-        distance[prim_st].weight = 1000; //ÃÖ´ëºñ¿ë ½ÅÀåÆ®¸®ÀÇ °æ¿ì => INFº¸´Ù Å« °ªÀ¸·Î ¼³Á¤
+        distance[prim_st].weight = 1000; //ìµœëŒ€ë¹„ìš© ì‹ ì¥íŠ¸ë¦¬ì˜ ê²½ìš° => INFë³´ë‹¤ í° ê°’ìœ¼ë¡œ ì„¤ì •
         break;
     }
     //distance[prim_st].weight = 0;
@@ -235,7 +235,7 @@ void prim(GraphType* g, int prim_st, int st_kind)
         }
 
         u = e.end;
-        //u = get_min_vertex(g->n); // 1 ¾Æ·¡ °úÁ¤¿¡¼­ ¿Å°ÜÁø distance¹è¿­À» ÅëÇØ, ÀÎÁ¢Çà·Ä»çÀÌÀÇ °¡ÁßÄ¡¸¦ ¾ò°í, °¡Àå ÀÛÀº °ª Ãâ·Â
+        //u = get_min_vertex(g->n); // 1 ì•„ë˜ ê³¼ì •ì—ì„œ ì˜®ê²¨ì§„ distanceë°°ì—´ì„ í†µí•´, ì¸ì ‘í–‰ë ¬ì‚¬ì´ì˜ ê°€ì¤‘ì¹˜ë¥¼ ì–»ê³ , ê°€ì¥ ì‘ì€ ê°’ ì¶œë ¥
         selected[u] = TRUE;
         switch (st_kind) {
         case 0:
@@ -247,24 +247,24 @@ void prim(GraphType* g, int prim_st, int st_kind)
         }
 
         if (u != prim_st) {
-            printf("°£¼± (%d,%d) %d ¼±ÅÃ\n", e.start+1, e.end+1, e.weight);
+            printf("ê°„ì„  (%d,%d) %d ì„ íƒ\n", e.start + 1, e.end + 1, e.weight);
             sum += e.weight;
         }
-        printf("Á¤Á¡ %d Ãß°¡\n", u+1);
+        printf("ì •ì  %d ì¶”ê°€\n", u + 1);
 
         for (v = 0; v < g->n; v++) {
             if (!selected[v] && g->adj_mat[u][v] != 0) {
-                if (distance[v].weight != INF) {//ÀÌ¹Ì °ªÀÌ Á¸ÀçÇÏ°í ÇØ´ç°ªÀÌ INF°¡ ¾Æ´Ò¶§
-                    //¾÷µ¥ÀÌÆ® È®ÀÎ
+                if (distance[v].weight != INF) {//ì´ë¯¸ ê°’ì´ ì¡´ì¬í•˜ê³  í•´ë‹¹ê°’ì´ INFê°€ ì•„ë‹ë•Œ
+                    //ì—…ë°ì´íŠ¸ í™•ì¸
                     switch (st_kind) {
-                    case 0: //distanceÀÇ °ªº¸´Ù ´õ ÀÛÀº °ªÀÏ°æ¿ì ÀÛÀº°ªÀ¸·Î distance°ª ¾÷µ¥ÀÌÆ® => ÃÖ¼Ò±æÀÌ½ÅÀåÆ®¸®
-                        if (g->adj_mat[u][v] < distance[v].weight && g->adj_mat[u][v] != INF) { //¾÷µ¥ÀÌÆ®
+                    case 0: //distanceì˜ ê°’ë³´ë‹¤ ë” ì‘ì€ ê°’ì¼ê²½ìš° ì‘ì€ê°’ìœ¼ë¡œ distanceê°’ ì—…ë°ì´íŠ¸ => ìµœì†Œê¸¸ì´ì‹ ì¥íŠ¸ë¦¬
+                        if (g->adj_mat[u][v] < distance[v].weight && g->adj_mat[u][v] != INF) { //ì—…ë°ì´íŠ¸
                             distance[v].weight = g->adj_mat[u][v];
                             distance[v].start = u;
                             distance[v].end = v;
                         }
                         break;
-                    case 1: //distanceÀÇ °ªº¸´Ù ´õ Å« °ªÀÏ°æ¿ì ´õ Å«°ªÀ¸·Î distance°ª ¾÷µ¥ÀÌÆ® => ÃÖ´ë±æÀÌ½ÅÀåÆ®¸®
+                    case 1: //distanceì˜ ê°’ë³´ë‹¤ ë” í° ê°’ì¼ê²½ìš° ë” í°ê°’ìœ¼ë¡œ distanceê°’ ì—…ë°ì´íŠ¸ => ìµœëŒ€ê¸¸ì´ì‹ ì¥íŠ¸ë¦¬
                         if (g->adj_mat[u][v] > distance[v].weight && g->adj_mat[u][v] != INF) {
                             if (g->adj_mat[u][v] == INF)
                                 distance[v].weight = -g->adj_mat[u][v];
@@ -277,7 +277,7 @@ void prim(GraphType* g, int prim_st, int st_kind)
                     }
                     continue;
                 }
-                //0ÀÎ °æ¿ì
+                //0ì¸ ê²½ìš°
                 if (st_kind == 1) {
                     distance[v].weight = -g->adj_mat[u][v];
                 }
@@ -305,10 +305,10 @@ void prim(GraphType* g, int prim_st, int st_kind)
     }
     switch (st_kind) {
     case 0:
-        printf("ÃÖ¼Ò ½ÅÀå Æ®¸® °£¼±µéÀÇ ÇÕ : %d", sum);
+        printf("ìµœì†Œ ì‹ ì¥ íŠ¸ë¦¬ ê°„ì„ ë“¤ì˜ í•© : %d", sum);
         break;
     case 1:
-        printf("ÃÖ¼Ò ½ÅÀå Æ®¸® °£¼±µéÀÇ ÇÕ : %d", sum);
+        printf("ìµœì†Œ ì‹ ì¥ íŠ¸ë¦¬ ê°„ì„ ë“¤ì˜ í•© : %d", sum);
         break;
 
     }
@@ -330,20 +330,20 @@ void print_status(GraphType* g, int i, int* dist, int* found) {
     printf("\n\n");
 }
 
-//-1ÀÌ µÉ¶§±îÁö Àç±ÍÀûÀ¸·Î ¹İº¹ÇÏ¿© ÇØ´ç ÀÎµ¦½ºÀÇ ¿ä¼Ò¸¦ Ãâ·ÂÇÏ°í, ¿ä¼Ò¸¦ ÀÎµ¦½º·Î ÇÏ¿© ¹İº¹ ½ÃÇà
+//-1ì´ ë ë•Œê¹Œì§€ ì¬ê·€ì ìœ¼ë¡œ ë°˜ë³µí•˜ì—¬ í•´ë‹¹ ì¸ë±ìŠ¤ì˜ ìš”ì†Œë¥¼ ì¶œë ¥í•˜ê³ , ìš”ì†Œë¥¼ ì¸ë±ìŠ¤ë¡œ í•˜ì—¬ ë°˜ë³µ ì‹œí–‰
 void print_prev(int* prev, int i) {
     if (prev[i] == -1) {
-        //printf("%d -> ", i); //¸ñÀûÁö µµÂø
+        //printf("%d -> ", i); //ëª©ì ì§€ ë„ì°©
         return;
     }
     else {
-        print_prev(prev, prev[i]);//ÇØ´ç ÀÎµ¦½º¸¦ ¿ä¼Ò·Î ÇÏ¿© Àç±Í È£Ãâ
-        printf("%2d -> ", prev[i]+1);//Àç±Í È£ÃâÀÌ ³¡³ª¸é ÇØ´ç ÀÎµ¦½ºÀÇ ¿ä¼Ò¸¦ Ãâ·Â
+        print_prev(prev, prev[i]);//í•´ë‹¹ ì¸ë±ìŠ¤ë¥¼ ìš”ì†Œë¡œ í•˜ì—¬ ì¬ê·€ í˜¸ì¶œ
+        printf("%2d -> ", prev[i] + 1);//ì¬ê·€ í˜¸ì¶œì´ ëë‚˜ë©´ í•´ë‹¹ ì¸ë±ìŠ¤ì˜ ìš”ì†Œë¥¼ ì¶œë ¥
     }
 }
 
 
-//´ÙÀÍ½ºÆ®¶ó ¾Ë°í¸®Áò
+//ë‹¤ìµìŠ¤íŠ¸ë¼ ì•Œê³ ë¦¬ì¦˜
 void dijkstra(GraphType* g, int start)
 {
     //int* dist;
@@ -353,13 +353,13 @@ void dijkstra(GraphType* g, int start)
     found = (int*)malloc(sizeof(int*) * g->n);
     prev = (int*)malloc(sizeof(int*) * g->n);
     int i, u, w;
-    for (i = 0; i < g->n; i++) /* ÃÊ±âÈ­ */
+    for (i = 0; i < g->n; i++) /* ì´ˆê¸°í™” */
     {
         dist[i] = g->adj_mat[start][i];
         found[i] = FALSE;
-        prev[i] = -1; // ¸ğµÎ -1·Î ÃÊ±âÈ­
+        prev[i] = -1; // ëª¨ë‘ -1ë¡œ ì´ˆê¸°í™”
     }
-    found[start] = TRUE;    /* ½ÃÀÛ Á¤Á¡ ¹æ¹® Ç¥½Ã */
+    found[start] = TRUE;    /* ì‹œì‘ ì •ì  ë°©ë¬¸ í‘œì‹œ */
     dist[start] = 0;
 
     for (i = 0; i < g->n; i++) {
@@ -370,22 +370,20 @@ void dijkstra(GraphType* g, int start)
             if (!found[w]) {
                 if (dist[u] + g->adj_mat[u][w] < dist[w]) {
                     dist[w] = dist[u] + g->adj_mat[u][w];
-                    prev[w] = u; //u¸¦ Åë°úÇØ °¬À»¶§ °¡Àå ÃÖ¼Ò°¡ µÊÀ» ³ªÅ¸³¿
+                    prev[w] = u; //uë¥¼ í†µê³¼í•´ ê°”ì„ë•Œ ê°€ì¥ ìµœì†Œê°€ ë¨ì„ ë‚˜íƒ€ëƒ„
                 }
             }
         }
     }
 
-    //prev ¹è¿­À» È°¿ëÇÏ¿© ÃÖ´Ü°Å¸® °æ·Î Ç¥Çö
-    //start¿¡¼­ ´Ù¸¥ Á¤Á¡±îÁöÀÇ °Å¸®
+    //prev ë°°ì—´ì„ í™œìš©í•˜ì—¬ ìµœë‹¨ê±°ë¦¬ ê²½ë¡œ í‘œí˜„
+    //startì—ì„œ ë‹¤ë¥¸ ì •ì ê¹Œì§€ì˜ ê±°ë¦¬
     for (i = 0; i < g->n; i++) {
-        printf("%2d -> ", start+1);
+        printf("%2d -> ", start + 1);
         print_prev(prev, i);
-        printf("%2d  =  %2d\n", i+1, dist[i]); //¸ñÀûÁö±îÁöÀÇ ÃÖ´Ü°æ·Î ºñ¿ë Ãâ·Â
+        printf("%2d  =  %2d\n", i + 1, dist[i]); //ëª©ì ì§€ê¹Œì§€ì˜ ìµœë‹¨ê²½ë¡œ ë¹„ìš© ì¶œë ¥
     }
 }
-
-
 
 int choose(int* dist, int n, int* found)
 {
@@ -401,7 +399,7 @@ int choose(int* dist, int n, int* found)
 }
 
 
-//2Â÷¿ø ¹è¿­ A¿¡ ´ëÇÑ »óÈ² Ãâ·Â
+//2ì°¨ì› ë°°ì—´ Aì— ëŒ€í•œ ìƒí™© ì¶œë ¥
 void printA(GraphType* g) {
     printf("========================================\n");
     for (int i = 0; i < g->n; i++) {
@@ -419,27 +417,34 @@ void printA(GraphType* g) {
 
 void floyd(GraphType* g, int fl_st, int fl_end)
 {
-    //2Â÷¿ø ¹è¿­ A »ı¼º
+    //2ì°¨ì› ë°°ì—´ A ìƒì„±
     A = (int**)malloc(sizeof(int**) * g->n);
     for (int i = 0; i < g->n; i++) {
         A[i] = (int*)malloc(sizeof(int*) * g->n);
     }
 
+    for (int i = 0; i < g->n; i++) /* ì´ˆê¸°í™” */
+        prev[i] = -1; // ëª¨ë‘ -1ë¡œ ì´ˆê¸°í™”
+
     int i, j, k;
-    //2Â÷¿ø ¹è¿­ A¿¡ adj_mat º¹»ç
+    //2ì°¨ì› ë°°ì—´ Aì— adj_mat ë³µì‚¬
     for (i = 0; i < g->n; i++)
         for (j = 0; j < g->n; j++) {
             A[i][j] = g->adj_mat[i][j];
             //printf("A[%d][%d] = %d ", i, j, A[i][j]);
         }
 
-    printA(g); //ÃÊ±â 2Â÷¿ø ¹è¿­ 
+    printA(g); //ì´ˆê¸° 2ì°¨ì› ë°°ì—´ 
+
+
 
     for (k = 0; k < g->n; k++) {
         for (i = 0; i < g->n; i++)
             for (j = 0; j < g->n; j++) {
                 if (A[i][k] + A[k][j] < A[i][j]) {
                     A[i][j] = A[i][k] + A[k][j];
+                    if(i==fl_st)
+                        prev[j] = k;
                 }
 
             }
@@ -447,12 +452,12 @@ void floyd(GraphType* g, int fl_st, int fl_end)
     }
     printA(g);
 
-    //ÀÔ·Â ¹ŞÀº ³ëµåÀÇ ÃÖ´Ü °æ·Î Ç¥Çö
+    //ì…ë ¥ ë°›ì€ ë…¸ë“œì˜ ìµœë‹¨ ê²½ë¡œ í‘œí˜„
     //fl_st -> fl_end
-    printf("%2d -> ", fl_st+1);
+    printf("%2d -> ", fl_st + 1);
     print_prev(prev, fl_end);
-    printf("%2d  =  %2d\n", fl_end+1, A[fl_st][fl_end]); //¸ñÀûÁö±îÁöÀÇ ÃÖ´Ü°æ·Î ºñ¿ë Ãâ·Â
-    printf("%d to %d with Floyd's shortest path(%d)\n", fl_st+1, fl_end+1, A[fl_st][fl_end]);
+    printf("%2d  =  %2d\n", fl_end + 1, A[fl_st][fl_end]); //ëª©ì ì§€ê¹Œì§€ì˜ ìµœë‹¨ê²½ë¡œ ë¹„ìš© ì¶œë ¥
+    printf("%d to %d with Floyd's shortest path(%d)\n", fl_st + 1, fl_end + 1, A[fl_st][fl_end]);
 
     for (int i = 0; i < g->n; i++) {
         free(A[i]);
