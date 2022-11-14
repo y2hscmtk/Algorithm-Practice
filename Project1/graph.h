@@ -138,7 +138,7 @@ void kruskal(GraphType* g, int st_kind)
         uset = set_find(e.start);   // 정점 u의 집합 번호 
         vset = set_find(e.end);      // 정점 v의 집합 번호
         if (uset != vset) {      // 서로 속한 집합이 다르면
-            printf("간선 (%d,%d) %d 선택\n", e.start, e.end, e.weight);
+            printf("간선 (%d,%d) %d 선택\n", e.start+1, e.end+1, e.weight);
             sum += e.weight;
             edge_accepted++;
             set_union(uset, vset);   // 두개의 집합을 합친다.
@@ -247,10 +247,10 @@ void prim(GraphType* g, int prim_st, int st_kind)
         }
 
         if (u != prim_st) {
-            printf("간선 (%d,%d) %d 선택\n", e.start, e.end, e.weight);
+            printf("간선 (%d,%d) %d 선택\n", e.start+1, e.end+1, e.weight);
             sum += e.weight;
         }
-        printf("정점 %d 추가\n", u);
+        printf("정점 %d 추가\n", u+1);
 
         for (v = 0; v < g->n; v++) {
             if (!selected[v] && g->adj_mat[u][v] != 0) {
@@ -338,7 +338,7 @@ void print_prev(int* prev, int i) {
     }
     else {
         print_prev(prev, prev[i]);//해당 인덱스를 요소로 하여 재귀 호출
-        printf("%2d -> ", prev[i]);//재귀 호출이 끝나면 해당 인덱스의 요소를 출력
+        printf("%2d -> ", prev[i]+1);//재귀 호출이 끝나면 해당 인덱스의 요소를 출력
     }
 }
 
@@ -379,9 +379,9 @@ void dijkstra(GraphType* g, int start)
     //prev 배열을 활용하여 최단거리 경로 표현
     //start에서 다른 정점까지의 거리
     for (i = 0; i < g->n; i++) {
-        printf("%2d -> ", start);
+        printf("%2d -> ", start+1);
         print_prev(prev, i);
-        printf("%2d  =  %2d\n", i, dist[i]); //목적지까지의 최단경로 비용 출력
+        printf("%2d  =  %2d\n", i+1, dist[i]); //목적지까지의 최단경로 비용 출력
     }
 }
 
@@ -449,10 +449,10 @@ void floyd(GraphType* g, int fl_st, int fl_end)
 
     //입력 받은 노드의 최단 경로 표현
     //fl_st -> fl_end
-    printf("%2d -> ", fl_st);
+    printf("%2d -> ", fl_st+1);
     print_prev(prev, fl_end);
-    printf("%2d  =  %2d\n", fl_end, A[fl_st][fl_end]); //목적지까지의 최단경로 비용 출력
-    printf("%d to %d with Floyd's shortest path(%d)\n", fl_st, fl_end, A[fl_st][fl_end]);
+    printf("%2d  =  %2d\n", fl_end+1, A[fl_st][fl_end]); //목적지까지의 최단경로 비용 출력
+    printf("%d to %d with Floyd's shortest path(%d)\n", fl_st+1, fl_end+1, A[fl_st][fl_end]);
 
     for (int i = 0; i < g->n; i++) {
         free(A[i]);

@@ -75,17 +75,17 @@ void main(int argc, char* argv[])
 		printf("\n프림 최소 신장 트리 알고리즘 \n");
 		printf("최소(0을 입력) 또는 최대(1을 입력) 신장 트리? "); scanf_s("%d", &st_kind);
 		printf("프림 알고리즘을 위한 출발 노드 번호? "); scanf_s("%d", &prim_st);
-		prim(&g, prim_st, st_kind);
+		prim(&g, prim_st-1, st_kind);
 		//printf("입력되었습니다.\n");
 
 		printf("\n\n다익스트라 최단거리 알고리즘 \n");
 		printf("다익스트라 알고리즘을 시작할 정점의 번호입력 "); scanf_s("%d", &dijk_st);
-		dijkstra(&g, dijk_st);
+		dijkstra(&g, dijk_st-1);
 
 		//플루이드 알고리즘 작성 위치
 		printf("\nFloyd 최단 경로 알고리즘을 위한 출발 노드 번호와 도착 노드 번호? ");
 		scanf_s("%d %d", &fl_st, &fl_end);
-		floyd(&g, fl_st, fl_end);
+		floyd(&g, fl_st-1, fl_end-1);
 
 		free(g.edges);
 		for (i = 0; i < num_node; i++) {
