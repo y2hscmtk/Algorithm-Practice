@@ -4,6 +4,21 @@
 #define SWAP(x, y, t) ( (t)=(x), (x)=(y), (y)=(t) )
 #define MAX_SIZE 10
 
+//배열을 랜덤한 값으로 초기화 한다.
+void init(int list[], int n) {
+	//초기화
+	for (int i = 0; i < n; i++)// 난수 생성 및 출력 
+		list[i] = rand() % 100; // 난수 발생 범위 0~99
+}
+
+//배열을 화면에 출력한다.
+void printArray(int list[], int n) {
+	for (int i = 0; i < n; i++)
+		printf("%d ", list[i]);
+	printf("\n\n");
+}
+
+
 //선택정렬
 void selection_sort(int list[], int n) {
 	//값을 "선택" 하여 SWAP하는 정렬
@@ -80,7 +95,7 @@ void inc_insertion_sort(int list[], int first, int last, int gap) {
 	//삽입 정렬을 진행하되, 간격을 1씩이 아니라 gap씩 줄여가며 gap만큼 차이나는 값끼리 비교한다.
 	//이동횟수를 줄일수 있으므로 시간을 더 아낄 수 있다.
 	int i, j, key;
-	for (i = first + gap; i <= last; i = i + gap) {
+	for (i = first + gap; i <= last; i = i + gap) {// i = 1(=0+1) i <= n; i++
 		key = list[i];
 		for (j = i - gap; j >= first && list[j]>key; j = j - gap) //key보다 gap만큼 왼쪽의 값들부터 모든 왼쪽 값들을 비교하는 과정
 			list[j + gap] = list[j]; //왼쪽 값들이 key보다 큰 값이라면 오른쪽으로 자리를 옮긴다.
@@ -101,21 +116,96 @@ void shell_sort(int list[], int n)   // n = size
 	}
 }
 
+// 합병 정렬
+// 리스트를 2개의 균등한 크기를 가진 배열로 분할하고, 각각의 배열을 정렬시킨후 합병한다.
+// 분할 정복 방법을 사용하여, 부분 배열을 다시 부분 배열로 분할하고, 마지막에 합병한다.
+// 1. 분할 : 같은 크기의 2개의 부분 배열로 분할
+// 2. 정복 : 부분 배열을 정렬한다. 부분 배열의 크기가 충분히 작지 않으면 재귀호출을 이용하여 다시 분할
+// 3. 결합 : 정렬된 부분배열을 하나의 배열로 통합
 
+/*
+* 입력파일: (27 10 12 20 25 13 15 22)
 
-//배열을 랜덤한 값으로 초기화 한다.
-void init(int list[], int n) {
-	//초기화
-	for (int i = 0; i < n; i++)// 난수 생성 및 출력 
-		list[i] = rand() % 100; // 난수 발생 범위 0~99
+1.분할(Divide) : 전체 배열을 (27 10 12 20), (25 13 15 22) 2개 부분배열로 분리
+2.정복(Conquer): 각 부분배열 정렬 (10 12 20 27), (13 15 22 25)
+3.결합(Combine): 2개의 정렬된 부분배열 통합 (10 12 13 15 20 22 25 27)
+*/
+
+int sorted[MAX_SIZE]; // 추가 공간이 필요
+
+// i는 정렬된 왼쪽리스트에 대한 인덱스
+// j는 정렬된 오른쪽리스트에 대한 인덱스
+// k는 정렬될 리스트에 대한 인덱스
+void merge(int list[], int left, int mid, int right)
+{
+	int i, j, k, l;
+	i = left; j = mid + 1; k = left;
+	// 분할 정렬된 list의 합병 
+	// => 2개의 리스트의 요소를 각각 비교하며 순서대로 sorted리스트에 삽입
+	while (i <= mid && j <= right) {
+		if (list[i] <= list[j]) sorted[k++] = list[i++];
+		else sorted[k++] = list[j++];
+	}
+	//i의 값이 mid보다 크다 => mid+1 배열의 값이 남았다.
+	if (i > mid) 	// 남아 있는 레코드의 일괄 복사
+		for (l = j; l <= right; l++)
+			sorted[k++] = list[l];
+	else 	// 남아 있는 레코드의 일괄 복사
+		for (l = i; l <= mid; l++)
+			sorted[k++] = list[l];
+	// 배열 sorted[]의 리스트를 배열 list[]로 복사
+	for (l = left; l <= right; l++)
+		list[l] = sorted[l];
 }
 
-//배열을 화면에 출력한다.
-void printArray(int list[], int n) {
-	for (int i = 0; i < n; i++)
-		printf("%d ", list[i]);
-	printf("\n\n");
+
+//합병 정렬 => 대부분의 상황에서 O(n*log(n))를 보장함
+//전체 레코드의 이동횟수가 매우 많으므로, 레코드의 크기가 큰 경우 매우 큰 시간 낭비가 발생
+//레코드를 연결 리스트로 구성하여 합병 정렬할 경우 매우 효율적(링크 인덱스만 변경되므로), 안정적인 정렬
+//임시 배열이 필요하다, 제자리 정렬이 아니다.
+void merge_sort(int list[], int left, int right)
+{
+	int mid;
+	if (left < right)
+	{
+		mid = (left + right) / 2;         // 리스트의 균등분할 
+		merge_sort(list, left, mid);     // 부분리스트 정렬
+		merge_sort(list, mid + 1, right);//부분리스트 정렬 => 2개로 분할된 각 부분 배열에 대해서 정렬 재귀 호출
+		merge(list, left, mid, right);    // 합병
+	}
 }
+
+//퀵 정렬
+//평균적으로 가장 빠른 정렬 방법
+//분할정복법 사용
+//리스트를 2개의 분할 리스트로 비균등 분할하고 각각의 부분을 다시 퀵 정렬함(재귀호출)
+//피벗을 결정하고 피벗보다 작은 값을 갖는 배열과 큰 값을 갖는 배열로 분할한다.
+
+//배열을 파티션으로 분할하는 과정
+int partition(int list[], int left, int right)
+{
+	int pivot, temp;
+	int low, high;
+
+	low = left;
+	high = right + 1;
+	pivot = list[left];
+	do {
+		do
+			low++;
+		while (low <= right && list[low] < pivot);
+		do
+			high--;
+		while (high >= left && list[high] > pivot);
+		if (low < high) SWAP(list[low], list[high], temp);
+	} while (low < high);
+
+	SWAP(list[left], list[high], temp);
+	return high;
+}
+
+
+
 
 int main(void)
 {
@@ -140,9 +230,21 @@ int main(void)
 	printArray(list, n); //배열 출력
 
 	init(list, n); //랜덤값 삽입
-	printf("버블 정렬\n");
+	printf("합병 정렬\n");
 	bubble_sort(list, n);
 	printArray(list, n); //배열 출력
+
+
+	init(list, n); //랜덤값 삽입
+	printf("합병 정렬\n");
+	merge_sort(list, 0, n-1); //마지막 인덱스는 n-1임에 주의
+	printArray(list, n); //배열 출력
+
+	init(list, n); //랜덤값 삽입
+	printf("합병 정렬\n");
+	merge_sort(list, 0, n - 1); //마지막 인덱스는 n-1임에 주의
+	printArray(list, n); //배열 출력
+
 
 	printf("\n");
 	return 0;
