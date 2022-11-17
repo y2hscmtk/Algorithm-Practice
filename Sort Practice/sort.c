@@ -1,11 +1,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include "queue.h"
 #define SWAP(x, y, t) ( (t)=(x), (x)=(y), (y)=(t) )
 #define MAX_SIZE 10
+// 6장의 큐 소스를 여기에...
+#define BUCKETS 10
+#define DIGITS 4
 
 //배열을 랜덤한 값으로 초기화 한다.
-void init(int list[], int n) {
+void initArray(int list[], int n) {
 	//초기화
 	for (int i = 0; i < n; i++)// 난수 생성 및 출력 
 		list[i] = rand() % 100; // 난수 발생 범위 0~99
@@ -226,6 +230,38 @@ void quick_sort(int list[], int left, int right)
 //기수정렬
 //대부분의 정렬은 레코드들을 비교하며 정렬하지만
 //기수정렬은 레코드를 비교하지 않고 정렬을 수행한다.
+//O(dn)의 시간복잡도 보장
+//단점 : 정렬할수 있는 레코드의 타입이 한정되어 있다. (실수, 한글, 한자,등은 적절치않음), 레코드의 키들이 동일한 길이를 가지는 숫자나 단순 문자(알파벳)이어야 함
+
+//(예) 한자리수 (8, 2, 7, 3, 5)의 기수정렬		
+//단순히 자리수에 따라 버켓(bucket)에 넣었다가 꺼내면 정렬됨
+//8 -> 8번 인덱스의 버켓에 보관, 2-> 2번 인덱스의 버켓에 보관 ....
+//이후 버켓에서 차례로 수를 꺼내면 됨
+
+//만약 2자리수이면? (28, 93, 39, 81, 62, 72, 38, 26) 
+//낮은 자리수(1의 자리수)로 먼저 분류한 다음, 순서대로 읽어서 다시 높은 자리수(십의 자리수)로 분류
+
+//버켓은 큐로 구현, 이진법을 사용한다면 버켓은 2개, 알파벳문자를 사용한다면 버켓은 26개, 십진법을 사용한다면 버켓은 10개...
+
+void radix_sort(int list[], int n)
+{
+	int i, b, d, factor = 1;
+	QueueType queues[BUCKETS];
+
+	for (b = 0; b < BUCKETS; b++) 
+		init(&queues[b]);	// 큐들의 초기화
+
+	for (d = 0; d < DIGITS; d++) {
+		for (i = 0; i < n; i++)				// 데이터들을 자리수에 따라 큐에 입력
+			enqueue(&queues[(list[i] / factor) % 10], list[i]);
+
+		for (b = i = 0; b < BUCKETS; b++)			// 버켓에서 꺼내어 list로 합친다.
+			while (!isEmpty(&queues[b]))
+				list[i++] = dequeue(&queues[b]);
+		factor *= 10;				// 그 다음 자리수로 간다.
+	}
+}
+
 
 
 int main(void)
@@ -235,37 +271,40 @@ int main(void)
 	int list[MAX_SIZE];
 	srand(time(NULL));
 
-	init(list, n); //랜덤값 삽입
+	initArray(list, n); //랜덤값 삽입
 	printf("선택 정렬\n");
 	selection_sort(list, n); // 선택정렬 호출 
 	printArray(list, n); //배열 출력
 
-	init(list, n); //랜덤값 삽입
+	initArray(list, n); //랜덤값 삽입
 	printf("삽입 정렬\n");
 	insertion_sort(list, n);
 	printArray(list, n); //배열 출력
 
-	init(list, n); //랜덤값 삽입
+	initArray(list, n); //랜덤값 삽입
 	printf("버블 정렬\n");
 	bubble_sort(list, n);
 	printArray(list, n); //배열 출력
 
-	init(list, n); //랜덤값 삽입
+	initArray(list, n); //랜덤값 삽입
 	printf("합병 정렬\n");
 	bubble_sort(list, n);
 	printArray(list, n); //배열 출력
 
-
-	init(list, n); //랜덤값 삽입
+	initArray(list, n); //랜덤값 삽입
 	printf("합병 정렬\n");
 	merge_sort(list, 0, n-1); //마지막 인덱스는 n-1임에 주의
 	printArray(list, n); //배열 출력
 
-	init(list, n); //랜덤값 삽입
+	initArray(list, n); //랜덤값 삽입
 	printf("퀵 정렬\n");
 	quick_sort(list, 0, n - 1); // 마지막 인덱스는 n-1
 	printArray(list, n); //배열 출력
 	
+	initArray(list, n); //랜덤값 삽입
+	printf("기수 정렬\n");
+	radix_sort(list, n); // 기수정렬 호출 
+	printArray(list, n); //배열 출력
 
 	printf("\n");
 	return 0;
