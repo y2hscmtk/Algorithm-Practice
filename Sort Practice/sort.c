@@ -184,27 +184,48 @@ void merge_sort(int list[], int left, int right)
 //배열을 파티션으로 분할하는 과정
 int partition(int list[], int left, int right)
 {
+
+	//피벗 값을 기준으로 왼쪽에는 피벗보다 작은 값을, 오른쪽에는 피벗보다 큰 값을 배치하는것이 최종 목적이다.
+	
+	//0번째 인덱스의 값을 피벗으로 설정하고 그후 왼쪽에서 오른쪽으로, 오른쪽 끝에서 왼쪽으로 수를 내려가면서
+	//왼쪽에 피벗보다 작은값이 위치하고 오른쪽에 피벗보다 큰 값이 위치하는지 여부를 살핀다.
+	//만약 순서가 올바르지 않다면 왼쪽과 오른쪽의 값을 서로 교환한다.
 	int pivot, temp;
 	int low, high;
 
 	low = left;
 	high = right + 1;
-	pivot = list[left];
+	pivot = list[left]; //0번째 인덱스의 값을 피벗으로 설정한다.
 	do {
 		do
-			low++;
-		while (low <= right && list[low] < pivot);
+			low++; //왼쪽에서 부터 +1하면서 수를 살핀다.
+		while (low <= right && list[low] < pivot); //해당 조건을 통과하면 올바른 위치에 값이 위치해 있다는 의미이므로, 다음 인덱스로 넘어간다.
 		do
-			high--;
-		while (high >= left && list[high] > pivot);
-		if (low < high) SWAP(list[low], list[high], temp);
+			high--; //오른쪽 끝에서부터 -1하면서 수를 살핀다.
+		while (high >= left && list[high] > pivot); //해당 조건을 통과하면 올바른 위치에 값이 위치하여 있다는 의미이다.
+		if (low < high) SWAP(list[low], list[high], temp); //올바른 위치에 있지 않은 값끼리 데이터를 교환한다.
 	} while (low < high);
 
-	SWAP(list[left], list[high], temp);
-	return high;
+	SWAP(list[left], list[high], temp); //모든 과정이 끝난후 피벗을 가운데 위치로 옮긴다.
+	return high; //피벗의 현재 인덱스를 리턴한다.
+}
+
+//퀵 정렬은 각 패스 안에서 n번의 비교를 거치므로 총 nlog2n의 비교를 거친다. 총 이동횟수는 비교횟수에 비하여 적으므로 무시
+//최선과 평균적인  경우 O(nlog2n)의 시간복잡도를 보장한다.
+//최악의 경우(극도로 불균형한 리스트) => O(n2)의 시간복잡도를 보장한다. (예 : 이미 정렬된 리스트의 경우)
+void quick_sort(int list[], int left, int right)
+{
+	if (left < right) {
+		int q = partition(list, left, right); //현재 피벗의 위치를 얻음 => 중간위치
+		quick_sort(list, left, q - 1); //왼쪽 배열에 대해서 퀵 정렬 진행
+		quick_sort(list, q + 1, right); //오른쪾 배열에 대해서 퀵 정렬 진행
+	}
 }
 
 
+//기수정렬
+//대부분의 정렬은 레코드들을 비교하며 정렬하지만
+//기수정렬은 레코드를 비교하지 않고 정렬을 수행한다.
 
 
 int main(void)
@@ -241,10 +262,10 @@ int main(void)
 	printArray(list, n); //배열 출력
 
 	init(list, n); //랜덤값 삽입
-	printf("합병 정렬\n");
-	merge_sort(list, 0, n - 1); //마지막 인덱스는 n-1임에 주의
+	printf("퀵 정렬\n");
+	quick_sort(list, 0, n - 1); // 마지막 인덱스는 n-1
 	printArray(list, n); //배열 출력
-
+	
 
 	printf("\n");
 	return 0;
