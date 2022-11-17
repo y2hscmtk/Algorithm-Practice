@@ -62,6 +62,47 @@ void bubble_sort(int list[], int n) //n은 리스트 요소의 '개수'를 의미한다. (10개
 }
 
 
+//삽입 정렬이 어느정도 정렬된 배열에 대해서 빠른 시간복잡도를 갖는것을 이용
+//삽입 정렬은 이웃한 위치로 이동하므로 이동횟수가 많음 
+// => 멀리 떨어진 자리로 이동할수 있도록 변경 => 간격을 넓게 설정하여 배열을 간격을 기준으로 삽입 정렬을 실시한다.
+//간격을 점점 줄여가며 간격이 1이 될때까지 이 과정을 반복한다.=>gep은 항상 홀수로 유지한다.
+//나눠진 각각의 부분 리스트를 삽입 정렬한다.
+//=>O(n1.5)의 시간복잡도를 보장한다.
+
+	
+// gap 만큼 떨어진 요소들을 삽입 정렬
+// 정렬의 범위는 first에서 last
+void inc_insertion_sort(int list[], int first, int last, int gap) {
+
+	//기본과정은 삽입 정렬과 동일하다.
+	//요소의 값을 하나씩 뽑아서, 해당 요소의 왼쪽값들과 크기를 비교하여,왼쪽의 값들이 더 큰 값이라면 오른쪽으로 밀어서 삽입할 자리를 찾는다.
+
+	//삽입 정렬을 진행하되, 간격을 1씩이 아니라 gap씩 줄여가며 gap만큼 차이나는 값끼리 비교한다.
+	//이동횟수를 줄일수 있으므로 시간을 더 아낄 수 있다.
+	int i, j, key;
+	for (i = first + gap; i <= last; i = i + gap) {
+		key = list[i];
+		for (j = i - gap; j >= first && list[j]>key; j = j - gap) //key보다 gap만큼 왼쪽의 값들부터 모든 왼쪽 값들을 비교하는 과정
+			list[j + gap] = list[j]; //왼쪽 값들이 key보다 큰 값이라면 오른쪽으로 자리를 옮긴다.
+		list[j + gap] = key; //오른쪽으로 숫자를 밀고난 j의 위치가 key가 "삽입"될 위치가 된다.
+	}
+}
+
+//쉘 정렬 => 최악 O(n2) 평균 O(n1.5)의 시간 복잡도를 제공한다.
+void shell_sort(int list[], int n)   // n = size
+{
+	//쉘 정렬을 시행하기 위해 gap의 크기를 정한다.
+	//초기 gap은 n의 절반 위치에서 시작하며, gap은 항상 홀수로 유지된다. gap이 1이 될때까지 각각의 부분리스트에 대하여 삽입 정렬을 반복한다.
+	int i, gap; 
+	for (gap = n / 2; gap > 0; gap = gap / 2) {
+		if ((gap % 2) == 0) gap++;
+		for (i = 0; i < gap; i++)		// 부분 리스트의 개수는 gap
+			inc_insertion_sort(list, i, n - 1, gap);
+	}
+}
+
+
+
 //배열을 랜덤한 값으로 초기화 한다.
 void init(int list[], int n) {
 	//초기화
@@ -84,18 +125,22 @@ int main(void)
 	srand(time(NULL));
 
 	init(list, n); //랜덤값 삽입
-
 	printf("선택 정렬\n");
 	selection_sort(list, n); // 선택정렬 호출 
 	printArray(list, n); //배열 출력
 
 	init(list, n); //랜덤값 삽입
-
 	printf("삽입 정렬\n");
 	insertion_sort(list, n);
 	printArray(list, n); //배열 출력
 
 	init(list, n); //랜덤값 삽입
+	printf("버블 정렬\n");
+	bubble_sort(list, n);
+	printArray(list, n); //배열 출력
+
+	init(list, n); //랜덤값 삽입
+	printf("버블 정렬\n");
 	bubble_sort(list, n);
 	printArray(list, n); //배열 출력
 
