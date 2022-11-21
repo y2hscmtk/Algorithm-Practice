@@ -11,6 +11,15 @@
 #define BUCKETS 50
 #define DIGITS 4
 
+
+//배열을 화면에 출력
+void printArray(int* list, int n) {
+	printf("\n");
+	for (int i = 0; i < n; i++)
+		printf("%d ", list[i]);
+}
+
+
 //선택정렬
 void selection_sort(int* list, int n, char order_cmd) {
 	//값을 "선택" 하여 SWAP하는 정렬
@@ -19,6 +28,7 @@ void selection_sort(int* list, int n, char order_cmd) {
 	//왼쪽에서 가장 작은 값을 갖는 요소의 인덱스 번호를 가져온 후
 	//해당 인덱스보다 큰 인덱스의 요소들 중 더 작은 값이 있다면 해당 인덱스의 요소와 SWAP한다
 	int i, j, least, temp, maximum;
+	printf("\n");
 	switch (order_cmd) {
 	case 'i': //오름차순 옵션일 경우
 		for (i = 0; i < n - 1; i++) {
@@ -26,6 +36,7 @@ void selection_sort(int* list, int n, char order_cmd) {
 			for (j = i + 1; j < n; j++)
 				if (list[j] < list[least]) least = j; //오른쪽 값들 중 가장 작은 값 탐색
 			SWAP(list[i], list[least], temp);
+			printArray(list, n);
 		}
 		break;
 	case 'd':
@@ -34,6 +45,7 @@ void selection_sort(int* list, int n, char order_cmd) {
 			for (j = i + 1; j < n; j++)
 				if (list[j] > list[maximum]) maximum = j; //오른쪽 값들 중 가장 작은 값 탐색
 			SWAP(list[i], list[maximum], temp);
+			printArray(list, n);
 		}
 		break;
 	}
@@ -59,6 +71,7 @@ void insertion_sort(int* list, int n, char order_cmd)
 				list[j + 1] = list[j];
 			}
 			list[j + 1] = key; //이렇게 해서 생긴자리로 키 값을 "삽입"한다. 마지막 조건에 의해 j의 값이 -1되었으므로 +1을 시킨다.
+			printArray(list, n); //중간과정을 출력한다.
 		}
 		break;
 	case 'd': //내림차순 정렬 옵션
@@ -69,6 +82,7 @@ void insertion_sort(int* list, int n, char order_cmd)
 				list[j + 1] = list[j];
 			}
 			list[j + 1] = key; //이렇게 해서 생긴자리로 키 값을 "삽입"한다. 마지막 조건에 의해 j의 값이 -1되었으므로 +1을 시킨다.
+			printArray(list, n); //중간과정을 출력한다.
 		}
 		break;
 	}
@@ -89,16 +103,20 @@ void bubble_sort(int* list, int n, char order_cmd) //n은 리스트 요소의 '개수'를 
 	case 'i':
 		for (i = n - 1; i > 0; i--) {
 			for (j = 0; j < i; j++) {  // 앞뒤의 레코드를 비교한 후 교체
-				if (list[j] > list[j + 1])  //앞뒤의 값을 비교하여 더 큰 값을 오른쪽으로
+				if (list[j] > list[j + 1]) {  //앞뒤의 값을 비교하여 더 큰 값을 오른쪽으로
 					SWAP(list[j], list[j + 1], temp);
+					printArray(list, n); //중간과정을 출력한다.
+				}
 			}
 		}
 		break;
 	case 'd':
 		for (i = n - 1; i > 0; i--) {
 			for (j = 0; j < i; j++) {  // 앞뒤의 레코드를 비교한 후 교체
-				if (list[j] < list[j + 1])  //앞뒤의 값을 비교하여 더 작은 값을 오른쪽으로
+				if (list[j] < list[j + 1]) {  //앞뒤의 값을 비교하여 더 작은 값을 오른쪽으로
 					SWAP(list[j], list[j + 1], temp);
+					printArray(list, n); //중간과정을 출력한다.
+				}
 			}
 		}
 		break;
@@ -120,7 +138,7 @@ int sorted[DATA_NUM]; // 추가 공간이 필요
 // i는 정렬된 왼쪽리스트에 대한 인덱스
 // j는 정렬된 오른쪽리스트에 대한 인덱스
 // k는 정렬될 리스트에 대한 인덱스
-void merge(int* list, int left, int mid, int right, char order_cmd)
+void merge(int* list, int left, int mid, int right, char order_cmd,int n)
 {
 	int i, j, k, l;
 	i = left; j = mid + 1; k = left;
@@ -151,6 +169,7 @@ void merge(int* list, int left, int mid, int right, char order_cmd)
 	// 배열 sorted[]의 리스트를 배열 list[]로 복사
 	for (l = left; l <= right; l++)
 		list[l] = sorted[l];
+	printArray(list, n);
 }
 
 
@@ -158,20 +177,20 @@ void merge(int* list, int left, int mid, int right, char order_cmd)
 //전체 레코드의 이동횟수가 매우 많으므로, 레코드의 크기가 큰 경우 매우 큰 시간 낭비가 발생
 //레코드를 연결 리스트로 구성하여 합병 정렬할 경우 매우 효율적(링크 인덱스만 변경되므로), 안정적인 정렬
 //임시 배열이 필요하다, 제자리 정렬이 아니다.
-void merge_sort(int* list, int left, int right, char order_cmd)
+void merge_sort(int* list, int left, int right, char order_cmd,int n)
 {
 	int mid;
 	if (left < right)
 	{
 		mid = (left + right) / 2;         // 리스트의 균등분할 
-		merge_sort(list, left, mid, order_cmd);     // 부분리스트 정렬
-		merge_sort(list, mid + 1, right, order_cmd);//부분리스트 정렬 => 2개로 분할된 각 부분 배열에 대해서 정렬 재귀 호출
-		merge(list, left, mid, right, order_cmd);    // 합병
+		merge_sort(list, left, mid, order_cmd,n);     // 부분리스트 정렬
+		merge_sort(list, mid + 1, right, order_cmd,n);//부분리스트 정렬 => 2개로 분할된 각 부분 배열에 대해서 정렬 재귀 호출
+		merge(list, left, mid, right, order_cmd,n);    // 합병
 	}
 }
 
 
-int partition(int* list, int left, int right, char order_cmd)
+int partition(int* list, int left, int right, char order_cmd,int n)
 {
 
 	//피벗 값을 기준으로 왼쪽에는 피벗보다 작은 값을, 오른쪽에는 피벗보다 큰 값을 배치하는것이 최종 목적이다.
@@ -194,7 +213,10 @@ int partition(int* list, int left, int right, char order_cmd)
 			do
 				high--; //오른쪽 끝에서부터 -1하면서 수를 살핀다.
 			while (high >= left && list[high] > pivot); //해당 조건을 통과하면 올바른 위치에 값이 위치하여 있다는 의미이다.
-			if (low < high) SWAP(list[low], list[high], temp); //올바른 위치에 있지 않은 값끼리 데이터를 교환한다.
+			if (low < high) {
+				SWAP(list[low], list[high], temp); //올바른 위치에 있지 않은 값끼리 데이터를 교환한다.
+				printArray(list, n);
+			}
 		} while (low < high);
 		break;
 	case 'd': //내림차순 정렬의 경우
@@ -205,25 +227,29 @@ int partition(int* list, int left, int right, char order_cmd)
 			do
 				high--; //오른쪽 끝에서부터 -1하면서 수를 살핀다.
 			while (high >= left && list[high] < pivot); //해당 조건을 통과하면 올바른 위치에 값이 위치하여 있다는 의미이다.
-			if (low < high) SWAP(list[low], list[high], temp); //올바른 위치에 있지 않은 값끼리 데이터를 교환한다.
+			if (low < high) {
+				SWAP(list[low], list[high], temp); //올바른 위치에 있지 않은 값끼리 데이터를 교환한다.
+				printArray(list, n);
+			}
 		} while (low < high);
 		break;
 	}
 
 	SWAP(list[left], list[high], temp); //모든 과정이 끝난후 피벗을 가운데 위치로 옮긴다.
+	printArray(list, n);
 	return high; //피벗의 현재 인덱스를 리턴한다.
 }
 
-void quick_sort(int list[], int left, int right, char order_cmd) {
+void quick_sort(int list[], int left, int right, char order_cmd,int n) {
 	if (left < right) {
-		int q = partition(list, left, right, order_cmd); //현재 피벗의 위치를 얻음 => 중간위치
-		quick_sort(list, left, q - 1, order_cmd);
-		quick_sort(list, q + 1, right, order_cmd);
+		int q = partition(list, left, right, order_cmd,n); //현재 피벗의 위치를 얻음 => 중간위치
+		quick_sort(list, left, q - 1, order_cmd,n);
+		quick_sort(list, q + 1, right, order_cmd,n);
 	}
 }
 
 
-void radix_sort(int list[], int n)
+void radix_sort(int* list, int n,char order_cmd,int digit)
 {
 	int i, b, d, factor = 1;
 	QueueType queues[BUCKETS];
@@ -231,13 +257,23 @@ void radix_sort(int list[], int n)
 	for (b = 0; b < BUCKETS; b++)
 		init(&queues[b]);	// 큐들의 초기화
 
-	for (d = 0; d < DIGITS; d++) {
+	for (d = 0; d < digit; d++) {
 		for (i = 0; i < n; i++)				// 데이터들을 자리수에 따라 큐에 입력
 			enqueue(&queues[(list[i] / factor) % 10], list[i]);
 
-		for (b = i = 0; b < BUCKETS; b++)			// 버켓에서 꺼내어 list로 합친다.
-			while (!isEmpty(&queues[b]))
-				list[i++] = dequeue(&queues[b]);
+		switch (order_cmd) {
+		case 'i':
+			for (b = i = 0; b < BUCKETS; b++)			// 버켓에서 꺼내어 list로 합친다.
+				while (!isEmpty(&queues[b]))
+					list[i++] = dequeue(&queues[b]);
+			break;
+		case 'd':
+			for (b = BUCKETS-1,i=0; b >= 0; b--)			// 버켓에서 꺼내어 list로 합친다.
+				while (!isEmpty(&queues[b]))
+					list[i++] = dequeue(&queues[b]);
+			break;
+		}
+		printArray(list, n);
 		factor *= 10;				// 그 다음 자리수로 간다.
 	}
 }
@@ -259,6 +295,7 @@ void inc_insertion_sort(int* list, int first, int last, int gap, char order_cmd)
 			for (j = i - gap; j >= first && list[j] > key; j = j - gap) //key보다 gap만큼 왼쪽의 값들부터 모든 왼쪽 값들을 비교하는 과정
 				list[j + gap] = list[j]; //왼쪽 값들이 key보다 큰 값이라면 오른쪽으로 자리를 옮긴다.
 			list[j + gap] = key; //오른쪽으로 숫자를 밀고난 j의 위치가 key가 "삽입"될 위치가 된다.
+			printArray(list, last+1);
 		}
 		break;
 	case 'd': //내림차순 옵션
@@ -267,6 +304,7 @@ void inc_insertion_sort(int* list, int first, int last, int gap, char order_cmd)
 			for (j = i - gap; j >= first && list[j] < key; j = j - gap) //key보다 gap만큼 왼쪽의 값들부터 모든 왼쪽 값들을 비교하는 과정
 				list[j + gap] = list[j]; //왼쪽 값들이 key보다 작은 값이라면 오른쪽으로 자리를 옮긴다.
 			list[j + gap] = key; //오른쪽으로 숫자를 밀고난 j의 위치가 key가 "삽입"될 위치가 된다.
+			printArray(list, last+1);
 		}
 		break;
 	}
@@ -393,7 +431,7 @@ void main(int argc, char* argv[])
 			break;
 		case 'm':
 			printf("merge sort with %s order", (order_cmd == 'i' ? "ascending" : "descending"));
-			merge_sort(data, 0, num_data - 1, order_cmd);
+			merge_sort(data, 0, num_data - 1, order_cmd,num_data);
 			break;
 		case 'h':
 			printf("heap sort with %s order", (order_cmd == 'i' ? "ascending" : "descending"));
@@ -401,10 +439,14 @@ void main(int argc, char* argv[])
 			break;
 		case 'q':
 			printf("selection sort with %s order", (order_cmd == 'i' ? "ascending" : "descending"));
-			quick_sort(data, 0, num_data - 1, order_cmd); // 마지막 인덱스는 n-1
+			quick_sort(data, 0, num_data - 1, order_cmd,num_data); // 마지막 인덱스는 n-1
 			break;
 		case 'r':
-			printf("selection sort with %s order", (order_cmd == 'i' ? "ascending" : "descending"));
+			printf("radix sort with %s order", (order_cmd == 'i' ? "ascending" : "descending"));
+			printf("\nnumber of digits?");
+			int digit;
+			scanf("%d", &digit);
+			radix_sort(data, num_data,order_cmd,digit);
 			break;
 		case 'l':
 			printf("shell sort with %s order", (order_cmd == 'i' ? "ascending" : "descending"));
