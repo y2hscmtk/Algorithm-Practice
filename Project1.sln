@@ -7,6 +7,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Algorithm practice2", "Proj
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Sort Practice", "Sort Practice\Sort Practice.vcxproj", "{1DCBFE0D-6160-42FA-83CA-1E1C8CD05C14}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Algorithm practice3", "Algorithm practice3\Algorithm practice3.vcxproj", "{FB0E8A10-5BC4-4A32-98CD-C0525D1696FA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -31,6 +33,14 @@ Global
 		{1DCBFE0D-6160-42FA-83CA-1E1C8CD05C14}.Release|x64.Build.0 = Release|x64
 		{1DCBFE0D-6160-42FA-83CA-1E1C8CD05C14}.Release|x86.ActiveCfg = Release|Win32
 		{1DCBFE0D-6160-42FA-83CA-1E1C8CD05C14}.Release|x86.Build.0 = Release|Win32
+		{FB0E8A10-5BC4-4A32-98CD-C0525D1696FA}.Debug|x64.ActiveCfg = Debug|x64
+		{FB0E8A10-5BC4-4A32-98CD-C0525D1696FA}.Debug|x64.Build.0 = Debug|x64
+		{FB0E8A10-5BC4-4A32-98CD-C0525D1696FA}.Debug|x86.ActiveCfg = Debug|Win32
+		{FB0E8A10-5BC4-4A32-98CD-C0525D1696FA}.Debug|x86.Build.0 = Debug|Win32
+		{FB0E8A10-5BC4-4A32-98CD-C0525D1696FA}.Release|x64.ActiveCfg = Release|x64
+		{FB0E8A10-5BC4-4A32-98CD-C0525D1696FA}.Release|x64.Build.0 = Release|x64
+		{FB0E8A10-5BC4-4A32-98CD-C0525D1696FA}.Release|x86.ActiveCfg = Release|Win32
+		{FB0E8A10-5BC4-4A32-98CD-C0525D1696FA}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
