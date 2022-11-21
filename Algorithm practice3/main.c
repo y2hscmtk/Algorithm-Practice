@@ -438,14 +438,14 @@ void main(int argc, char* argv[])
 			heap_sort(data, num_data, order_cmd); //내림차순 정렬 조건 수정할것
 			break;
 		case 'q':
-			printf("selection sort with %s order", (order_cmd == 'i' ? "ascending" : "descending"));
+			printf("quick sort with %s order", (order_cmd == 'i' ? "ascending" : "descending"));
 			quick_sort(data, 0, num_data - 1, order_cmd,num_data); // 마지막 인덱스는 n-1
 			break;
 		case 'r':
 			printf("radix sort with %s order", (order_cmd == 'i' ? "ascending" : "descending"));
 			printf("\nnumber of digits?");
 			int digit;
-			scanf("%d", &digit);
+			scanf("%d", &digit); //자리수 입력받기
 			radix_sort(data, num_data,order_cmd,digit);
 			break;
 		case 'l':
