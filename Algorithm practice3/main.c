@@ -9,7 +9,6 @@
 #define SWAP(x, y, t) ( (t)=(x), (x)=(y), (y)=(t) )
 #define DATA_NUM	50
 #define BUCKETS 50
-#define DIGITS 4
 
 
 //배열을 화면에 출력
@@ -337,16 +336,28 @@ void heap_sort(int* a, int n, char order_cmd)
 	for (i = 0; i < n; i++) {
 		insert_max_heap(h, a[i]);
 	}
-
+	printf("\n");
+	for (int j = 1; j < strlen(h->heap); j++) {
+		printf("%d ", h->heap[j]);
+	}
+	printf("\n");
 	switch (order_cmd) {
 	case 'i': //오름차순 정렬
 		for (i = (n - 1); i >= 0; i--) {
 			a[i] = delete_max_heap(h);
+			for (int j = 1; j < strlen(h->heap); j++) {
+				printf("%d ", h->heap[j]);
+			}
+			printf("\n");
 		}
 		break;
 	case 'd': //내림차순 정렬
 		for (i = 0; i < n; i++) {
 			a[i] = delete_max_heap(h);
+			for (int j = 1; j < strlen(h->heap); j++) {
+				printf("%d ", h->heap[j]);
+			}
+			printf("\n");
 		}
 		break;
 	}
